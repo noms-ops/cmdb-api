@@ -1489,9 +1489,8 @@ sub doGenericGET()
     $logger->info("processing GET");
     my $requestObject = shift;
 
-    # check to see if this entity requires special processing, otherwise handle with generic
     # assemble sql based on input parameters
-    $sql = "select * from $$requestObject{'entity'} where ";
+    $sql = "select " . join(',',@{ &getFieldList( $$requestObject{'entity'} ) }).  " from $$requestObject{'entity'} where ";
 
     # check for path key value and add if specified
     if ( $$requestObject{'path'}[0] )
