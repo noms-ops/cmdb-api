@@ -395,14 +395,14 @@ sub getFieldList()
     my @arr;
     foreach ( keys( %{ $tree->{entities}->{$entity} } ) )
     {
-        next if ( $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' );
+        next if ( $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' || $_ eq 'field_order');
         push( @arr, $_ );
     }
     if ( $valid_entities->{$entity} eq 'system' && !$bare )
     {
         foreach ( keys( %{ $tree->{entities}->{device} } ) )
         {
-            next if ( $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' );
+            next if ( $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' || $_ eq 'field_order' );
             push( @arr, $_ );
         }
     }
@@ -2792,7 +2792,6 @@ sub doSystemPOST()
     my $device_fields = &getFieldList( 'device', 1 );
     my $meta_fields = &getFieldList( $$requestObject{'entity'}, 1 );
     my ( $sql, $set_sql, $parms, @errors, $rv );
-    $data->{'inventory_component_type'} = 'system' unless $data->{'inventory_component_type'};
 
     if ( $data->{$IPADDRESSFIELD} && !$data->{'data_center_code'} )
     {
@@ -2800,14 +2799,14 @@ sub doSystemPOST()
     }
     $dbs->begin_work;
 
-    if ( ( !exists $$data{$_} || $$data{$_} == '' ) && $tree_extended->{entities}->{'system'}->{$_}->{default_value} )
-    {
-        $$data{$_} = $tree_extended->{entities}->{'system'}->{$_}->{default_value};
-    }
-
     # construct insert sql for device table
     foreach (@$device_fields)
     {
+        if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{'system'}->{$_}->{default_value} )
+        {
+            $logger->debug("using default value ($tree_extended->{entities}->{'system'}->{$_}->{default_value}) for $_");
+            $$data{$_} = $tree_extended->{entities}->{'system'}->{$_}->{default_value};
+        }
         next if $_ eq 'created_by';
         if ( exists $$data{$_} )
         {
@@ -2842,6 +2841,12 @@ sub doSystemPOST()
     # do update or insert into device_metadata
     foreach (@$meta_fields)
     {
+        if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{'system'}->{"$_"}->{default_value} )
+        {
+            $logger->debug("using default value ($tree_extended->{entities}->{'system'}->{$_}->{default_value}) for $_");
+            $$data{$_} = $tree_extended->{entities}->{'system'}->{$_}->{default_value};
+        }
+
         if ( exists $$data{$_} )
         {
             $$data{$_} = &doFieldNormalization( 'system', $_, $$data{$_} ) if exists $$data{$_};
