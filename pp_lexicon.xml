@@ -228,7 +228,7 @@
                 <format>string</format>
                 <fact>fqdn</fact>
             </fqdn>
-            <inventory_component_type field_category="main" required="true">
+            <inventory_component_type default_value="system" field_category="main" required="true">
                 <label>Type</label>
                 <flavor>config</flavor>
                 <format>string</format>
@@ -531,7 +531,7 @@
                 <flavor>config</flavor>
                 <format>string</format>
             </audit_info>
-            <environment_name field_category="main" label="Environment" maps_to="/pp_lexicon/data_elements/string" required="false">
+            <environment_name default_value="production" field_category="main" label="Environment" maps_to="/pp_lexicon/data_elements/string" required="false">
             <enumeration attribute="name" entity="environments"/>
             </environment_name>
 
