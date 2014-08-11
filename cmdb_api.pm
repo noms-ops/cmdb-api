@@ -1124,9 +1124,10 @@ sub doGenericPOST
 
     foreach my $f ( @{ &getFieldList( $$requestObject{'entity'} ) } )
     {
-        if ( ( !exists $$data{$f} || $$data{$f} == '' ) && $tree_extended->{entities}->{$entity}->{$f}->{default_value} )
+        if ( ( !exists $$data{$f} || $$data{$f} eq '' ) && $tree_extended->{entities}->{$entity}->{$f}->{default_value} )
         {
-            $$data{$_} = $tree_extended->{entities}->{$entity}->{$f}->{default_value};
+            $logger->debug("using default value ($tree_extended->{entities}->{$entity}->{$f}->{default_value}) for $f");        	
+            $$data{$f} = $tree_extended->{entities}->{$entity}->{$f}->{default_value};
         }
         if ( exists $$data{$f} )
         {
