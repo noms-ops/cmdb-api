@@ -317,14 +317,14 @@
                 <!-- <flavor>fact</flavor>-->
                 <format>string</format>
                 <fact>manufacturer</fact>
-                <enumeration attribute="manufacturer" entity="system"/>
+                <enumeration forceselect="false" attribute="manufacturer" entity="system"/>
             </manufacturer>
             <productname field_category="HW Info" >
                 <label>Product</label>
                 <!-- <flavor>fact</flavor>-->
                 <format>string</format>
                 <fact>productname</fact>
-                <enumeration attribute="productname" entity="system"/>
+                <enumeration forceselect="false" attribute="productname" entity="system"/>
             </productname>
             <created_by label="Created by" maps_to="/pp_lexicon/data_elements/string" required="false"/>
             <date_created label="Created at" required="false" type="date"/>
@@ -430,7 +430,7 @@
                 <flavor>config</flavor>
                 <format>string</format>
                 <fact>operatingsystem</fact>
-                <enumeration attribute="operating_system" entity="system"/>
+                <enumeration forceselect="false" attribute="operating_system" entity="system"/>
             </operatingsystem>
             <operatingsystemrelease>
                 <label>OS Release</label>
@@ -480,7 +480,7 @@
             <roles field_category="main" >
                 <label>Roles</label>
                 <format>multiselect</format>
-                <enumeration attribute="role_id" entity="role"/>
+                <enumeration forceselect="true" attribute="role_id" entity="role"/>
             </roles>
             <role_version label="Role Version" field_catetory="main" fact="notestore_version" />
             <customers type="array">
