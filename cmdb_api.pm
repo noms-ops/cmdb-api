@@ -827,7 +827,7 @@ sub setNewName()
         push( @$parms, $$r{'fqdn'} );
     }
 
-    my $dbh = DBI->connect( "DBI:mysql:database=inventory;host=$DBHOST", $DBUSER, $DBPASS, { AutoCommit => 0, RaiseError => 1 } );
+    my $dbh = DBI->connect( "DBI:mysql:database=$DATABASE;host=$DBHOST", $DBUSER, $DBPASS, { AutoCommit => 0, RaiseError => 1 } );
     my $sth;
 
     eval {
