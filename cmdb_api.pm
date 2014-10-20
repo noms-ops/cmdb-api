@@ -19,8 +19,6 @@
 package cmdb_api;
 use strict;
 use warnings;
-use lib '/opt/pptools';
-use ppenv;
 use URI::Escape;
 use Apache2::RequestRec ();
 use Apache2::Request;
