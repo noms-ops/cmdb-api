@@ -7,3 +7,8 @@ The inventory CMDB started as way to track assets and some parts of configuratio
 
 It is now a part of a larger set of loosely coupled Operations tools that we collectively refer to as NOMS:
 https://github.com/evernote/noms-client/wiki
+
+The API works very well with the UI project 
+CMDB-UI (https://github.com/isaacfinnegan/cmdb-ui) - Web-based GUI for the NOMS CMDB
+
+
