@@ -191,6 +191,7 @@ sub handler()
     $up_uri =~ s/.+\?//;
     my $uri = uri_unescape($up_uri);
     my $req = Apache2::Request->new($r);
+    my $connection = $r->connection;
     my ( $requestObject, $data, $formatted_data );
     %{ $$requestObject{'query'} } = %{ $req->param } if $req->param;
     $$requestObject{'getparams'} = $uri;
@@ -201,8 +202,15 @@ sub handler()
     $$requestObject{'pathstr'}        = $req->uri();
     $$requestObject{'user'}           = &doGenericGET( { entity => 'user', path => [ $req->user ] } ) if $req->user;
     $$requestObject{'http_auth_user'} = $req->user if $req->user;
-    $$requestObject{'ip_address'}     = $r->connection->remote_ip();
-
+    # apache 2.4 doesn't have this anymore
+    if( $connection->can('remote_ip') )
+    {
+        $$requestObject{'ip_address'}     = $connection->remote_ip();
+    }
+    else
+    {
+        $$requestObject{'ip_address'}     = $r->useragent_ip;
+    }
     if ( $$requestObject{'method'} ne 'GET' )
     {
         $$requestObject{'body'} = read_post($r);
