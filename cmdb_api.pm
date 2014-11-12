@@ -81,7 +81,8 @@ my $opt = Optconfig->new(
             system                => 'System',
             device                => 'System',
             newhostname           => 'Provision',
-            pcmsystemname         => 'ProvisionPcm',
+            pcmsystemname         => 'ProvisionNcc',
+            nccsystemname         => 'ProvisionNcc',
             user                  => 'Generic',
             currentUser           => 'User',
             inv_audit             => 'Generic',
@@ -624,7 +625,7 @@ sub doTrafficControlPOST()
 
 }
 
-sub doProvisionPcmGET()
+sub doProvisionNccGET()
 {
     my $requestObject = shift;
     my $id            = $$requestObject{'path'}[0];
