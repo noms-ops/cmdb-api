@@ -168,7 +168,7 @@
             <data_center_country label="Country"/>
             <data_center_phone label="Phone"/>
         </data_center>
-        <datacenter_subnet label="DataCenter" key="id" field_order="id,subnet,ipv6_subnet,data_center_code,nodes,az_id">
+        <datacenter_subnet key="id" field_order="id,subnet,ipv6_subnet,data_center_code,nodes,az_id">
             <id>
                 <label>ID</label>
                 <flavor>config</flavor>
