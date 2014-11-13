@@ -665,10 +665,13 @@ sub doProvisionNccGET()
 }
 
 # special api to fetch new hostname for provisioning
+# this API is deprecated
 sub doProvisionGET()
 {
     my $requestObject = shift;
     my ( $sql, $sth, $rv );
+
+    $logger->warn("doProvisionGET API is deprecated and should not longer be used");
 
     # this code seems pointless, why check for length 7 if we are going to remove chars?
     if ( $$requestObject{'query'}{'serial_number'} && length( $$requestObject{'query'}{'serial_number'} ) == 7 )
@@ -786,6 +789,7 @@ sub setNewName()
     my $newname;
 
     # check to see if the name is correct or if box is set to production/deployment
+    #TODO: this should be kicking in based on violating an ACL or all just needs to go away
     if ( $$r{'fqdn'} !~ /m\d{7}\.ppops\.net/ && $$r{'status'} ne 'production' && $$r{'status'} ne 'deployment' )
     {
         if ( defined $$r{'mac_address'} )
@@ -855,6 +859,19 @@ sub setNewName()
             $sql = "update device set fqdn=? where id=?";
             $sth = $dbh->prepare($sql);
             executeDbStatement( $sth, $sql, ( $newname, $device_id ) );
+            # we also need to setup any default field values that the lexicon has
+            my $data=&applyDefaults({},'system');
+            # assemble whats needed to call the systemPUT api to make the update
+            doSystemPUT(
+                {
+                    'path'       => ['$newname'],
+                    'body'       => make_json($data),
+                    'entity'     => 'system',
+                    'user'       => { 'systemuser' => 1, 'username' => 'lexicon_defaults' },
+                    'ip_address' => 'nccsystemname'
+                }
+            );
+
         }
 
         $dbh->commit;
@@ -1128,14 +1145,9 @@ sub doGenericPOST
         $$requestObject{'stat'} = Apache2::Const::HTTP_FORBIDDEN;
         return 'ACL blocked change: ' . &make_json($blocked_changes);
     }
-
+    $data = &applyDefaults($data,$entity);
     foreach my $f ( @{ &getFieldList( $$requestObject{'entity'} ) } )
     {
-        if ( ( !exists $$data{$f} || $$data{$f} eq '' ) && $tree_extended->{entities}->{$entity}->{$f}->{default_value} )
-        {
-            $logger->debug("using default value ($tree_extended->{entities}->{$entity}->{$f}->{default_value}) for $f");        	
-            $$data{$f} = $tree_extended->{entities}->{$entity}->{$f}->{default_value};
-        }
         if ( exists $$data{$f} )
         {
             $$data{$f} = &doFieldNormalization( $entity, $f, $$data{$f} );
@@ -2788,6 +2800,24 @@ sub doSystemPUT()
     }
 }
 
+sub applyDefaults()
+{
+    my $data=shift;
+    my $entity=shift;
+
+    my $fields = &getFieldList( $entity );
+
+    foreach (@$fields)
+    {
+        if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{ $entity }->{$_}->{default_value} )
+        {
+            $logger->debug("using default value ($tree_extended->{entities}->{ $entity }->{$_}->{default_value}) for $_");
+            $$data{$_} = $tree_extended->{entities}->{ $entity }->{$_}->{default_value};
+        }
+    }
+    return $data;
+}
+
 sub doSystemPOST()
 {
     my $requestObject = shift;
@@ -2806,14 +2836,11 @@ sub doSystemPOST()
     }
     $dbs->begin_work;
 
+    #setup default values if there are any needed
+    $data=&applyDefaults($data,'system');
     # construct insert sql for device table
     foreach (@$device_fields)
     {
-        if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{'system'}->{$_}->{default_value} )
-        {
-            $logger->debug("using default value ($tree_extended->{entities}->{'system'}->{$_}->{default_value}) for $_");
-            $$data{$_} = $tree_extended->{entities}->{'system'}->{$_}->{default_value};
-        }
         next if $_ eq 'created_by';
         if ( exists $$data{$_} )
         {
@@ -2848,12 +2875,6 @@ sub doSystemPOST()
     # do update or insert into device_metadata
     foreach (@$meta_fields)
     {
-        if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{'system'}->{"$_"}->{default_value} )
-        {
-            $logger->debug("using default value ($tree_extended->{entities}->{'system'}->{$_}->{default_value}) for $_");
-            $$data{$_} = $tree_extended->{entities}->{'system'}->{$_}->{default_value};
-        }
-
         if ( exists $$data{$_} )
         {
             $$data{$_} = &doFieldNormalization( 'system', $_, $$data{$_} ) if exists $$data{$_};
