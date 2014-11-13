@@ -405,7 +405,7 @@ sub getFieldList()
         next if ( $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' || $_ eq 'field_order');
         push( @arr, $_ );
     }
-    if ( $valid_entities->{$entity} eq 'system' && !$bare )
+    if ( $entity eq 'system' && !$bare )
     {
         foreach ( keys( %{ $tree->{entities}->{device} } ) )
         {
@@ -860,11 +860,14 @@ sub setNewName()
             $sth = $dbh->prepare($sql);
             executeDbStatement( $sth, $sql, ( $newname, $device_id ) );
             # we also need to setup any default field values that the lexicon has
+
+            #commit so the next edit works
+            $dbh->commit;
             my $data=&applyDefaults({},'system');
             # assemble whats needed to call the systemPUT api to make the update
             doSystemPUT(
                 {
-                    'path'       => ['$newname'],
+                    'path'       => ["$newname"],
                     'body'       => make_json($data),
                     'entity'     => 'system',
                     'user'       => { 'systemuser' => 1, 'username' => 'lexicon_defaults' },
@@ -1135,10 +1138,10 @@ sub doGenericPOST
     my $data = &eat_json( $$requestObject{'body'}, { allow_nonref => 1 } );
     my $blocked_changes = {};
     &runACL( $requestObject, {}, $entity, $data, $blocked_changes );
+    $logger->info( "blocked POST fields: " . &make_json($blocked_changes) );
 
-    # if the user is not a system user, then error out now if needed
-    $logger->info( "blocked PUT fields: " . &make_json($blocked_changes) );
     my $now = $dbh->selectcol_arrayref('select now()');
+    # if the user is not a system user, then error out now if needed
     if ( $requestObject->{'user'}->{'systemuser'} ne '1' && scalar( keys(%$blocked_changes) ) )
     {
         $dbh->rollback;
@@ -2141,7 +2144,7 @@ sub doEnvironmentsServicesPOST()
         &runACL( $requestObject, {}, 'services', $data, $blocked_changes );
 
         # if the user is not a system user, then error out now if needed
-        $logger->info( "blocked PUT fields: " . &make_json($blocked_changes) );
+        $logger->info( "blocked POST fields: " . &make_json($blocked_changes) );
         my $now = $dbh->selectcol_arrayref('select now()');
         if ( $requestObject->{'user'}->{'systemuser'} ne '1'
             && scalar( keys(%$blocked_changes) ) )
@@ -2806,12 +2809,11 @@ sub applyDefaults()
     my $entity=shift;
 
     my $fields = &getFieldList( $entity );
-
     foreach (@$fields)
     {
         if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{ $entity }->{$_}->{default_value} )
         {
-            $logger->debug("using default value ($tree_extended->{entities}->{ $entity }->{$_}->{default_value}) for $_");
+            $logger->debug("using ($entity) default value '$tree_extended->{entities}->{ $entity }->{$_}->{default_value}' for $_");
             $$data{$_} = $tree_extended->{entities}->{ $entity }->{$_}->{default_value};
         }
     }
