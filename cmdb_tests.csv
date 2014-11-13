@@ -23,8 +23,8 @@ edit service_instance_data,,service_instance_data,9999,"{""data_value"":""newdat
 delete service_instance_data,,service_instance_data,9999,,DELETE,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,,
 delete service_instance,,service_instance,999,,DELETE,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,,
 ,,,,,,http://localhost:80,/cmdb_api/v1/,readonly/readonly,,,
-inv_normalizer,,inv_normalizer,999,"{""id"":999,""field_name"":""product_name"",""matcher"":""testname"",""sub_value"":""SpecialTestProduct"",""entity_name"":""system""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/inv_normalizer/999
-do edit against normalizer,,system,test.test.com,"{""product_name"":""testname2""}",PUT,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,product_name=SpecialTestProduct
+inv_normalizer,,inv_normalizer,999,"{""id"":999,""field_name"":""productname"",""matcher"":""testname"",""sub_value"":""SpecialTestProduct"",""entity_name"":""system""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/inv_normalizer/999
+do edit against normalizer,,system,test.test.com,"{""productname"":""testname2""}",PUT,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,productname=SpecialTestProduct
 delete normalizer,,inv_normalizer,999,,DELETE,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,,
 ,,,,,,http://localhost:80,/cmdb_api/v1/,readonly/readonly,,,
 lookup nonexistent role,,role,norole,,GET,http://localhost:80,/cmdb_api/v1/,readonly/readonly,404,,
