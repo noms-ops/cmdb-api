@@ -301,7 +301,7 @@ sub handler()
                 message => $data
             };
         }
-        $logger->debug("final return of status: $$requestObject{'stat'}") if ( $logger->is_debug() );
+        $logger->debug("final return of status: $$requestObject{'stat'}");
 
         #TODO reconcile the '"string" data that comes back from above and how we output it (errors, etc...)
         if ( $$requestObject{'headers_out'} )
