@@ -1685,7 +1685,7 @@ sub doEnvironmentsServicesGET()
         parseQueryParams( $requestObject->{'getparams'}, \%getparams, [ 'type', 'name' ] );
     }
 
-    $environment_tag = 1 if defined $requestObject->{'query'}->{'_tag_environment'};
+    $environment_tag = 1 if (defined $requestObject->{'query'}->{'_tag_environment'} || defined $requestObject->{'query'}->{'_meta'});
 
     for my $env ( @{ $rtn->{'data'} } )
     {
@@ -1706,9 +1706,8 @@ sub doEnvironmentsServicesGET()
         push @parents, $hash{ $parents[-1] };
     }
     pop @parents;
-
     %hash = ();
-    my $list = join( ', ', map { "'$_'" } @parents );
+    my $list = join( ', ', map { "'$_'" } reverse(@parents) );
     $sql = "select name, environment_name, note,  s.svc_id, type, data_key, data_value from " . " (select name, environment_name, note,  svc_id, type from service_instance " . "  where type != 'environment' ";
 
     if ( defined $service )
@@ -1742,18 +1741,41 @@ sub doEnvironmentsServicesGET()
                 note             => $data->{'note'},
             };
         }
+        else
+        {
+            $hash{ $data->{'name'} }->{'name'} = $data->{'name'};
+            $hash{ $data->{'name'} }->{'environment_name'} = $data->{'environment_name'};
+            $hash{ $data->{'name'} }->{'type'} = $data->{'type'};
+            $hash{ $data->{'name'} }->{'svc_id'} = $data->{'svc_id'};
+            $hash{ $data->{'name'} }->{'note'} = $data->{'note'};
+        }
 
         my $svc   = $hash{ $data->{'name'} };
         my $key   = $data->{'data_key'};
         my $value = $data->{'data_value'};
-        next if ( ( not defined $key ) || exists $svc->{$key} );
+        next if ( not defined $key  || grep(/^$key$/,['name','note','type','svc_id','environment_name'] ) );
+        # next if ( ( not defined $key ) || exists $svc->{$key} );
 
         if ($environment_tag)
         {
+            my $inherited=0;
+            $logger->debug("TEST $key  " . $svc->{$key});
+            if(exists $svc->{$key})
+            {
+                $inherited = $svc->{$key};  
+                $logger->debug("inherited $key");             
+            }
+
             $svc->{$key} = {
                 value            => $value,
                 environment_name => $data->{'environment_name'}
             };
+            
+            if($inherited != 0)
+            {
+                $svc->{$key}->{'inherited'} = $inherited;
+            }
+
         }
         else
         {
