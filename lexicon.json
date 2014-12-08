@@ -1,989 +1,920 @@
 {
-    "acl": {
-        "acl_group": {
-            "_format": "string",
-            "_label": "Group"
-        },
-        "acl_id": {
-            "_format": "int",
-            "_label": "ID"
-        },
-        "entity": {
-            "_format": "string",
-            "_label": "Entity"
-        },
-        "field": {
-            "_format": "string",
-            "_label": "Field"
-        },
-        "_field_order": "acl_id,acl_group,entity,field,logic",
-        "_key": "acl_id",
-        "logic": {
-            "_format": "string",
-            "_label": "Block Logic"
-        }
-    },
-    "change_queue": {
-        "change_content": {
-            "_format": "string",
-            "_label": "Change"
-        },
-        "change_ip": {
-            "_format": "string",
-            "_label": "IP Address"
-        },
-        "change_time": {
-            "_format": "string",
-            "_label": "Time"
-        },
-        "change_user": {
-            "_format": "string",
-            "_label": "User"
-        },
-        "entity": {
-            "_format": "string",
-            "_label": "Entity"
-        },
-        "entity_key": {
-            "_format": "string",
-            "_label": "Key"
-        },
-        "id": {
-            "_format": "string",
-            "_label": "ID"
-        },
-        "_key": "id"
-    },
-    "data_center": {
-        "data_center_city": {
-            "_label": "City"
-        },
-        "data_center_code": {
-            "_format": "string",
-            "_label": "Datacenter",
-            "_required": "true"
-        },
-        "data_center_country": {
-            "_label": "Country"
-        },
-        "data_center_phone": {
-            "_label": "Phone"
-        },
-        "data_center_vendor": {
-            "_label": "Vendor"
-        },
-        "_field_order": "data_center_code,data_center_vendor,data_center_city,data_center_country,data_center_telephone",
-        "_key": "data_center_code"
-    },
-    "datacenter_subnet": {
-        "data_center_code": {
-            "_flavor": "config",
-            "_maps_to": "/lexicon/entities/data_center/data_center_code",
-            "_required": "false"
-        },
-        "_field_order": "id,subnet,ipv6_subnet,data_center_code,nodes,az_id",
-        "gateway": {
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Gateway",
-            "_required": "false"
-        },
-        "id": {
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "ID",
-            "_required": "true"
-        },
-        "_key": "id",
-        "notes": {
-            "_flavor": "config",
-            "_format": "text",
-            "_label": "Notes",
-            "_required": "false"
-        },
-        "subnet": {
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Subnet",
-            "_required": "true"
-        },
-        "vlan": {
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "VLAN",
-            "_required": "false"
-        }
-    },
-    "device": {
-        "agent_reported": {
-            "_flavor": "_fact",
-            "_label": "Agent Reported",
-            "_meta": "true",
-            "_required": "false",
-            "_type": "date"
-        },
-        "cage_code": {
-            "_field_category": "HW Info",
-            "_label": "Cage",
-            "_maps_to": "/lexicon/entities/cage/cage_code",
-            "_required": "false"
-        },
-        "created_by": {
-            "_label": "Created by",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "data_center_code": {
-            "_enumeration": {
-                "attribute": "data_center_code",
-                "entity": "data_center",
-                "enumerator": [
-                    "BA1",
-                    "DC1",
-                    "ETN",
-                    "TEST01"
-                ]
+    "entities": {
+        "acl": {
+            "acl_group": {
+                "_format": "string",
+                "_label": "Group"
             },
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "Datacenter",
-            "_required": "true"
-        },
-        "date_created": {
-            "_label": "Created at",
-            "_required": "false",
-            "_type": "date"
-        },
-        "date_modified": {
-            "_label": "Modified at",
-            "_required": "false",
-            "_type": "date"
-        },
-        "fqdn": {
-            "_fact": "fqdn",
-            "_field_category": "main",
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Name",
-            "_required": "true"
-        },
-        "inventory_component_type": {
-            "default_value": "system",
-            "_enumeration": {
-                "enumerator": [
-                    "blade_chassis",
-                    "console_server",
-                    "firewall",
-                    "load_balancer",
-                    "network_switch",
-                    "other",
-                    "power_strip",
-                    "router",
-                    "rsa_appliance",
-                    "storage_head",
-                    "storage_shelf",
-                    "system",
-                    "vpn"
-                ]
+            "acl_id": {
+                "_format": "int",
+                "_label": "ID"
             },
-            "_field_category": "main",
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Type",
-            "_required": "true",
-            "_validation": {
-                "is_string": {}
+            "entity": {
+                "_format": "string",
+                "_label": "Entity"
+            },
+            "field": {
+                "_format": "string",
+                "_label": "Field"
+            },
+            "_field_order": "acl_id,acl_group,entity,field,logic",
+            "_key": "acl_id",
+            "logic": {
+                "_format": "string",
+                "_label": "Block Logic"
             }
         },
-        "ipaddress": {
-            "_fact": "betterip,ipaddress,ip_address",
-            "_field_category": "main",
-            "_format": "string",
-            "_label": "IP Address",
-            "_required": "true",
-            "_validation": {
-                "regex": "/.*/"
-            }
-        },
-        "_key": "fqdn",
-        "macaddress": {
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "MAC Address",
-            "_required": "true",
-            "_validation": {
-                "regex": "/.*/"
-            }
-        },
-        "manufacturer": {
-            "_enumeration": {
-                "attribute": "manufacturer",
-                "entity": "system",
-                "enumerator": [
-                    "Dell",
-                    "HP",
-                    "iXsystems",
-                    "Supermicro"
-                ],
-                "forceselect": "false"
+        "change_queue": {
+            "change_content": {
+                "_format": "string",
+                "_label": "Change"
             },
-            "_fact": "manufacturer",
-            "_field_category": "HW Info",
-            "_format": "string",
-            "_label": "Manufacturer"
-        },
-        "productname": {
-            "_enumeration": {
-                "attribute": "productname",
-                "entity": "system",
-                "enumerator": [
-                    "SpecialTestProduct"
-                ],
-                "forceselect": "false"
+            "change_ip": {
+                "_format": "string",
+                "_label": "IP Address"
             },
-            "_fact": "productname",
-            "_field_category": "HW Info",
-            "_format": "string",
-            "_label": "Product"
-        },
-        "rack_code": {
-            "_field_category": "HW Info",
-            "_label": "Rack",
-            "_maps_to": "/lexicon/entities/rack/rack_code",
-            "_required": "false"
-        },
-        "rack_position": {
-            "_field_category": "HW Info",
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Rack Position",
-            "_validation": {
-                "is_int": {},
-                "less_than_or_equal_to": "42"
-            }
-        },
-        "serial_number": {
-            "_fact": "serial_number",
-            "_field_category": "HW Info",
-            "_format": "string",
-            "_label": "Serial"
-        },
-        "status": {
-            "_enumeration": {
-                "enumerator": [
-                    "production",
-                    "deployment",
-                    "allocated",
-                    "idle",
-                    "in transit",
-                    "degraded",
-                    "decommissioned",
-                    "disposed"
-                ]
+            "change_time": {
+                "_format": "string",
+                "_label": "Time"
             },
-            "_field_category": "main",
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Status",
-            "_required": "false",
-            "_validation": {
-                "is_string": {}
-            }
-        },
-        "system_type": {
-            "_enumeration": {
-                "enumerator": [
-                    "POD",
-                    "Archiving",
-                    "Core",
-                    "EDN",
-                    "Eng"
-                ]
+            "change_user": {
+                "_format": "string",
+                "_label": "User"
             },
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Business",
-            "_required": "false",
-            "_validation": {
-                "is_string": {}
-            }
-        }
-    },
-    "environments": {
-        "environment_name": {
-            "_enumeration": {
-                "attribute": "name",
-                "entity": "environments",
-                "enumerator": [
-                    "lab",
-                    "production",
-                    "secondlevel",
-                    "testing"
-                ]
+            "entity": {
+                "_format": "string",
+                "_label": "Entity"
             },
-            "_field_category": "main",
-            "_label": "Parent Environment",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "true"
-        },
-        "_key": "name",
-        "name": {
-            "_label": "Name",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "true"
-        },
-        "note": {
-            "_label": "Note",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        }
-    },
-    "environmentservice": {
-        "environment_name": {
-            "_enumeration": {
-                "attribute": "name",
-                "entity": "environments",
-                "enumerator": [
-                    "lab",
-                    "production",
-                    "secondlevel",
-                    "testing"
-                ]
+            "entity_key": {
+                "_format": "string",
+                "_label": "Key"
             },
-            "_field_category": "main",
-            "_label": "Environment",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "_field_order": "name,type,note,environment_name",
-        "_key": "name",
-        "name": {
-            "_label": "SVC Name",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "true"
-        },
-        "note": {
-            "_label": "Note",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "_type": {
-            "_label": "Type",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        }
-    },
-    "hardware_model": {
-        "hardware_class": {
-            "_label": "HW Class",
-            "_maps_to": "/lexicon/data_elements/product_variant",
-            "_required": "false"
-        },
-        "_key": "hardware_class",
-        "manufacturer": {
-            "_format": "string",
-            "_label": "Manufacturer"
-        },
-        "power_supply_count": {
-            "_label": "Pwr Supply Count",
-            "_maps_to": "/lexicon/data_elements/power_supply_count",
-            "_required": "false"
-        },
-        "power_supply_watts": {
-            "_format": "float",
-            "_label": "Power Supply(Watts)",
-            "_validation": {
-                "is_float": {}
-            }
-        },
-        "product_name": {
-            "_format": "string",
-            "_label": "Product"
-        },
-        "size": {
-            "_format": "int",
-            "_label": "Size (RU)",
-            "_required": "false"
-        }
-    },
-    "inv_audit": {
-        "change_ip": {
-            "_format": "string",
-            "_label": "IP Address"
-        },
-        "change_time": {
-            "_format": "string",
-            "_label": "Time"
-        },
-        "change_user": {
-            "_format": "string",
-            "_label": "User"
-        },
-        "entity_key": {
-            "_format": "string",
-            "_label": "Key"
-        },
-        "entity_name": {
-            "_format": "string",
-            "_label": "Entity"
-        },
-        "field_name": {
-            "_format": "string",
-            "_label": "Field"
-        },
-        "_key": "entity_key",
-        "new_value": {
-            "_format": "string",
-            "_label": "New Value"
-        },
-        "old_value": {
-            "_format": "string",
-            "_label": "Old Value"
-        }
-    },
-    "inv_normalizer": {
-        "entity_name": {
-            "_format": "string",
-            "_label": "Entity",
-            "_required": "true"
-        },
-        "field_name": {
-            "_format": "string",
-            "_label": "Field",
-            "_required": "true"
-        },
-        "_field_order": "id,entity_name,field_name,matcher,sub_value",
-        "id": {
-            "_format": "int",
-            "_label": "ID",
-            "_required": "true"
-        },
-        "_key": "id",
-        "matcher": {
-            "_format": "string",
-            "_label": "Regex Matcher",
-            "_required": "true"
-        },
-        "sub_value": {
-            "_format": "string",
-            "_label": "Substitute Value",
-            "_required": "true"
-        }
-    },
-    "rack": {
-        "cage_code": {
-            "_maps_to": "/lexicon/entities/cage/cage_code",
-            "_required": "true"
-        },
-        "data_center_code": {
-            "_maps_to": "/lexicon/entities/data_center/data_center_code",
-            "_required": "true"
-        },
-        "_key": "rack_code",
-        "rack_code": {
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        }
-    },
-    "role": {
-        "_field_order": "role_id,role_name",
-        "_key": "role_id",
-        "role_id": {
-            "_format": "string",
-            "_label": "Role",
-            "_required": "true"
-        },
-        "role_name": {
-            "_label": "Description",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "true"
-        }
-    },
-    "service_instance": {
-        "environment_name": {
-            "_enumeration": {
-                "attribute": "name",
-                "entity": "environments",
-                "enumerator": [
-                    "lab",
-                    "production",
-                    "secondlevel",
-                    "testing"
-                ]
+            "id": {
+                "_format": "string",
+                "_label": "ID"
             },
-            "_field_category": "main",
-            "_label": "Environment",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
+            "_key": "id"
         },
-        "_field_order": "svc_id,name,type,note,environment_name",
-        "_key": "svc_id",
-        "name": {
-            "_label": "SVC Name",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "true"
-        },
-        "note": {
-            "_label": "Note",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "svc_id": {
-            "_label": "SVC ID",
-            "_maps_to": "/lexicon/data_elements/int",
-            "_required": "true"
-        },
-        "_type": {
-            "_label": "Type",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        }
-    },
-    "service_instance_data": {
-        "data_id": {
-            "_label": "Data ID",
-            "_maps_to": "/lexicon/data_elements/int",
-            "_required": "true"
-        },
-        "data_key": {
-            "_label": "Key",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "true"
-        },
-        "data_value": {
-            "_label": "Value",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "true"
-        },
-        "_key": "data_id",
-        "svc_id": {
-            "_label": "SVC ID",
-            "_maps_to": "/lexicon/data_elements/int",
-            "_required": "true"
-        }
-    },
-    "system": {
-        "agent_type": {
-            "_flavor": "_fact",
-            "_label": "Agent Type",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "asset_tag_number": {
-            "_field_category": "HW Info",
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Asset Tag"
-        },
-        "audit_info": {
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "Phys Audit",
-            "_required": "false"
-        },
-        "bios_vendor": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Bios Vendor",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "bios_version": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Bios Version",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "cloud": {
-            "_label": "Cloud",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_meta": "true",
-            "_required": "false"
-        },
-        "config_agent_output": {
-            "_field_category": "Puppet",
-            "_format": "text",
-            "_label": "Puppet Output",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_meta": "true",
-            "_required": "false"
-        },
-        "config_agent_status": {
-            "_field_category": "Puppet",
-            "_label": "Puppet Status",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_meta": "true",
-            "_required": "false"
-        },
-        "config_agent_summary": {
-            "_field_category": "Puppet",
-            "_label": "Puppet Summary",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_meta": "true",
-            "_required": "false"
-        },
-        "config_agent_timestamp": {
-            "_field_category": "Puppet",
-            "_label": "Puppet Timestamp",
-            "_meta": "true",
-            "_required": "false",
-            "_type": "date"
-        },
-        "customers": {
-            "customer": {
-                "_maps_to": "/lexicon/entities/customer"
+        "data_center": {
+            "data_center_city": {
+                "_label": "City"
             },
-            "_label": "Customers",
-            "_type": "array"
-        },
-        "disk_drive_count": {
-            "_field_category": "HW Info",
-            "_label": "Drive Count",
-            "_maps_to": "/lexicon/data_elements/int",
-            "_required": "false"
-        },
-        "drac": {
-            "_field_category": "HW Info",
-            "_label": "DRAC",
-            "_maps_to": "/lexicon/entities/drac",
-            "_required": "false"
-        },
-        "drac_macaddress": {
-            "_field_category": "HW Info",
-            "_label": "Drac MacAddress",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "drac_version": {
-            "_field_category": "HW Info",
-            "_label": "Drac Version",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "environment_name": {
-            "default_value": "production",
-            "_enumeration": {
-                "attribute": "name",
-                "entity": "environments",
-                "enumerator": [
-                    "lab",
-                    "production",
-                    "secondlevel",
-                    "testing"
-                ]
+            "data_center_code": {
+                "_format": "string",
+                "_label": "Datacenter",
+                "_required": "true"
             },
-            "_field_category": "main",
-            "_label": "Environment",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "_extends": "/lexicon/entities/device",
-        "_field_order": "fqdn,status,inventory_component_type,roles,ipaddress,environment_name,svc_id,notes",
-        "file_systems": {
-            "file_system": {
-                "_maps_to": "/lexicon/entities/file_system"
+            "data_center_country": {
+                "_label": "Country"
             },
-            "_label": "File Systems",
-            "_type": "array"
+            "data_center_phone": {
+                "_label": "Phone"
+            },
+            "data_center_vendor": {
+                "_label": "Vendor"
+            },
+            "_field_order": "data_center_code,data_center_vendor,data_center_city,data_center_country,data_center_telephone",
+            "_key": "data_center_code"
         },
-        "guest_fqdns": {
-            "fqdn": {
-                "_maps_to": "/lexicon/data_elements/fqdn",
+        "datacenter_subnet": {
+            "data_center_code": {
+                "_flavor": "config",
                 "_required": "false"
             },
-            "_label": "Guest Hosts",
-            "_type": "array"
-        },
-        "hardware_class": {
-            "_enumeration": {
-                "attribute": "hardware_class",
-                "entity": "hardware_model",
-                "enumerator": [
-                    "1USystem",
-                    "2USystem",
-                    "3USystem",
-                    "4USystem"
-                ]
+            "_field_order": "id,subnet,ipv6_subnet,data_center_code,nodes,az_id",
+            "gateway": {
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Gateway",
+                "_required": "false"
             },
-            "_field_category": "HW Info",
-            "_label": "Class",
-            "_required": "false"
-        },
-        "host_fqdn": {
-            "_label": "Parent Host",
-            "_maps_to": "/lexicon/data_elements/fqdn",
-            "_required": "false"
-        },
-        "image": {
-            "_label": "System Image",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_meta": "true",
-            "_required": "false"
-        },
-        "interfaces": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "NICs",
-            "_required": "false"
-        },
-        "ipmi_ip": {
-            "_field_category": "HW Info",
-            "_label": "IPMI Address"
-        },
-        "ipv6address": {
-            "_label": "IPv6 Address",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "is_virtual": {
-            "_label": "Virtual",
-            "_maps_to": "/lexicon/data_elements/bool",
-            "_required": "false"
-        },
-        "kernelrelease": {
-            "_fact": "kernelrelease",
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "Kernel Release"
-        },
-        "_key": "fqdn",
-        "memorysize": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Memory",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "netdriver": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "Netdriver"
-        },
-        "netdriver_duplex": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "Netdriver Duplex"
-        },
-        "netdriver_firmware": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "Netdriver Firmware"
-        },
-        "netdriver_speed": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "Netdriver Speed"
-        },
-        "netdriver_version": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "string",
-            "_label": "Netdriver Version"
-        },
-        "notes": {
-            "_field_category": "main",
-            "_format": "text",
-            "_label": "Notes",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "operatingsystem": {
-            "_enumeration": {
-                "attribute": "operating_system",
-                "entity": "system",
-                "enumerator": [
-                    "Debian",
-                    "RedHat"
-                ],
-                "forceselect": "false"
+            "id": {
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "ID",
+                "_required": "true"
             },
-            "_fact": "operatingsystem",
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "OS"
-        },
-        "operatingsystemrelease": {
-            "_fact": "operatingsystemrelease",
-            "_flavor": "config",
-            "_format": "string",
-            "_label": "OS Release"
-        },
-        "physical_processor_count": {
-            "_field_category": "HW Info",
-            "_label": "Processor Count",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "power_consumption_avg": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "int",
-            "_label": "Average Power Consumption(Watts)",
-            "_validation": {
-                "is_int": {}
+            "_key": "id",
+            "notes": {
+                "_flavor": "config",
+                "_format": "text",
+                "_label": "Notes",
+                "_required": "false"
+            },
+            "subnet": {
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Subnet",
+                "_required": "true"
+            },
+            "vlan": {
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "VLAN",
+                "_required": "false"
             }
         },
-        "power_consumption_peak": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "int",
-            "_label": "Peak Power Consumption(Watts)",
-            "_validation": {
-                "is_int": {}
+        "device": {
+            "agent_reported": {
+                "_flavor": "_fact",
+                "_label": "Agent Reported",
+                "_meta": "true",
+                "_required": "false",
+                "_type": "date"
+            },
+            "cage_code": {
+                "_field_category": "HW Info",
+                "_label": "Cage",
+                "_required": "false"
+            },
+            "created_by": {
+                "_label": "Created by",
+                "_required": "false"
+            },
+            "data_center_code": {
+                "_enumeration": {
+                    "attribute": "data_center_code",
+                    "entity": "data_center",
+                    "enumerator": [
+                        "BA1",
+                        "DC1",
+                        "ETN",
+                        "TEST01"
+                    ]
+                },
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "Datacenter",
+                "_required": "true"
+            },
+            "date_created": {
+                "_label": "Created at",
+                "_required": "false",
+                "_type": "date"
+            },
+            "date_modified": {
+                "_label": "Modified at",
+                "_required": "false",
+                "_type": "date"
+            },
+            "fqdn": {
+                "_fact": "fqdn",
+                "_field_category": "main",
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Name",
+                "_required": "true"
+            },
+            "inventory_component_type": {
+                "default_value": "system",
+                "_enumeration": {
+                    "enumerator": [
+                        "blade_chassis",
+                        "console_server",
+                        "firewall",
+                        "load_balancer",
+                        "network_switch",
+                        "other",
+                        "power_strip",
+                        "router",
+                        "rsa_appliance",
+                        "storage_head",
+                        "storage_shelf",
+                        "system",
+                        "vpn"
+                    ]
+                },
+                "_field_category": "main",
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Type",
+                "_required": "true",
+                "_validation": {
+                    "is_string": {}
+                }
+            },
+            "ipaddress": {
+                "_fact": "betterip,ipaddress,ip_address",
+                "_field_category": "main",
+                "_format": "string",
+                "_label": "IP Address",
+                "_required": "true",
+                "_validation": {
+                    "regex": "/.*/"
+                }
+            },
+            "_key": "fqdn",
+            "macaddress": {
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "MAC Address",
+                "_required": "true",
+                "_validation": {
+                    "regex": "/.*/"
+                }
+            },
+            "manufacturer": {
+                "_enumeration": {
+                    "attribute": "manufacturer",
+                    "entity": "system",
+                    "enumerator": [
+                        "Dell",
+                        "HP",
+                        "iXsystems",
+                        "Supermicro"
+                    ],
+                    "forceselect": "false"
+                },
+                "_fact": "manufacturer",
+                "_field_category": "HW Info",
+                "_format": "string",
+                "_label": "Manufacturer"
+            },
+            "productname": {
+                "_enumeration": {
+                    "attribute": "productname",
+                    "entity": "system",
+                    "enumerator": [
+                        "SpecialTestProduct"
+                    ],
+                    "forceselect": "false"
+                },
+                "_fact": "productname",
+                "_field_category": "HW Info",
+                "_format": "string",
+                "_label": "Product"
+            },
+            "rack_code": {
+                "_field_category": "HW Info",
+                "_label": "Rack",
+                "_required": "false"
+            },
+            "rack_position": {
+                "_field_category": "HW Info",
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Rack Position",
+                "_validation": {
+                    "is_int": {},
+                    "less_than_or_equal_to": "42"
+                }
+            },
+            "serial_number": {
+                "_fact": "serial_number",
+                "_field_category": "HW Info",
+                "_format": "string",
+                "_label": "Serial"
+            },
+            "status": {
+                "_enumeration": {
+                    "enumerator": [
+                        "production",
+                        "deployment",
+                        "allocated",
+                        "idle",
+                        "in transit",
+                        "degraded",
+                        "decommissioned",
+                        "disposed"
+                    ]
+                },
+                "_field_category": "main",
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Status",
+                "_required": "false",
+                "_validation": {
+                    "is_string": {}
+                }
+            },
+            "system_type": {
+                "_enumeration": {
+                    "enumerator": [
+                        "POD",
+                        "Archiving",
+                        "Core",
+                        "EDN",
+                        "Eng"
+                    ]
+                },
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Business",
+                "_required": "false",
+                "_validation": {
+                    "is_string": {}
+                }
             }
         },
-        "power_consumption_peak_time": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "int_timestamp",
-            "_label": "Time of Peak Power (Unix Timestamp, UTC)"
-        },
-        "power_supply_watts": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_format": "float",
-            "_label": "Power Supply(Watts)",
-            "_validation": {
-                "is_float": {}
+        "environments": {
+            "environment_name": {
+                "_enumeration": {
+                    "attribute": "name",
+                    "entity": "environments",
+                    "enumerator": [
+                        "lab",
+                        "production",
+                        "secondlevel",
+                        "testing"
+                    ]
+                },
+                "_field_category": "main",
+                "_label": "Parent Environment",
+                "_required": "true"
+            },
+            "_key": "name",
+            "name": {
+                "_label": "Name",
+                "_required": "true"
+            },
+            "note": {
+                "_label": "Note",
+                "_required": "false"
             }
         },
-        "raidbaddrives": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Raid Bad Drives",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "raidcontroller": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Raid Controller",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "raiddrives": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Raid Drives",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "raiddrivestatus": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Raid Drive Status",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "raidtype": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Raid Type",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "raidvolumes": {
-            "_field_category": "HW Info",
-            "_flavor": "_fact",
-            "_label": "Raid Volumes",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "role_version": {
-            "_fact": "notestore_version",
-            "field_catetory": "main",
-            "_label": "Role Version"
-        },
-        "roles": {
-            "_enumeration": {
-                "attribute": "role_id",
-                "entity": "role",
-                "enumerator": [
-                    "hadoop_datanode",
-                    "nagios",
-                    "repo::apt"
-                ],
-                "forceselect": "true"
+        "environmentservice": {
+            "environment_name": {
+                "_enumeration": {
+                    "attribute": "name",
+                    "entity": "environments",
+                    "enumerator": [
+                        "lab",
+                        "production",
+                        "secondlevel",
+                        "testing"
+                    ]
+                },
+                "_field_category": "main",
+                "_label": "Environment",
+                "_required": "false"
             },
-            "_field_category": "main",
-            "_format": "multiselect",
-            "_label": "Roles"
-        },
-        "size": {
-            "_label": "Instance Size",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_meta": "true",
-            "_required": "false"
-        },
-        "svc_id": {
-            "_enumeration": {
-                "attribute": "name",
-                "entity": "service_instance",
-                "enumerator": [
-                    "cmdb",
-                    "ldap_ba1",
-                    "testsvc"
-                ]
+            "_field_order": "name,type,note,environment_name",
+            "_key": "name",
+            "name": {
+                "_label": "SVC Name",
+                "_required": "true"
             },
-            "_field_category": "main",
-            "_label": "Service Record",
-            "_maps_to": "/lexicon/data_elements/int",
-            "_required": "false"
-        },
-        "tags": {
-            "_label": "JSON Tags",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "virtual": {
-            "_flavor": "_fact",
-            "_label": "VM Type",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        },
-        "warranty_info": {
-            "_field_category": "HW Info",
-            "_format": "text",
-            "_label": "Warranty Info",
-            "_maps_to": "/lexicon/data_elements/string",
-            "_required": "false"
-        }
-    },
-    "user": {
-        "_field_order": "username,systemuser,groups,writeaccess,sshkey",
-        "groups": {
-            "_enumeration": {
-                "enumerator": [
-                    "OPS",
-                    "IT",
-                    "QA"
-                ]
+            "note": {
+                "_label": "Note",
+                "_required": "false"
             },
-            "_format": "array",
-            "_label": "Groups"
+            "_type": {
+                "_label": "Type",
+                "_required": "false"
+            }
         },
-        "_key": "username",
-        "sshkey": {
-            "_format": "text",
-            "_label": "SSH Key"
+        "hardware_model": {
+            "hardware_class": {
+                "_label": "HW Class",
+                "_required": "false"
+            },
+            "_key": "hardware_class",
+            "manufacturer": {
+                "_format": "string",
+                "_label": "Manufacturer"
+            },
+            "power_supply_count": {
+                "_label": "Pwr Supply Count",
+                "_required": "false"
+            },
+            "power_supply_watts": {
+                "_format": "float",
+                "_label": "Power Supply(Watts)",
+                "_validation": {
+                    "is_float": {}
+                }
+            },
+            "product_name": {
+                "_format": "string",
+                "_label": "Product"
+            },
+            "size": {
+                "_format": "int",
+                "_label": "Size (RU)",
+                "_required": "false"
+            }
         },
-        "systemuser": {
-            "_format": "bool",
-            "_label": "System User"
+        "inv_audit": {
+            "change_ip": {
+                "_format": "string",
+                "_label": "IP Address"
+            },
+            "change_time": {
+                "_format": "string",
+                "_label": "Time"
+            },
+            "change_user": {
+                "_format": "string",
+                "_label": "User"
+            },
+            "entity_key": {
+                "_format": "string",
+                "_label": "Key"
+            },
+            "entity_name": {
+                "_format": "string",
+                "_label": "Entity"
+            },
+            "field_name": {
+                "_format": "string",
+                "_label": "Field"
+            },
+            "_key": "entity_key",
+            "new_value": {
+                "_format": "string",
+                "_label": "New Value"
+            },
+            "old_value": {
+                "_format": "string",
+                "_label": "Old Value"
+            }
         },
-        "username": {
-            "_format": "string",
-            "_label": "Username"
+        "inv_normalizer": {
+            "entity_name": {
+                "_format": "string",
+                "_label": "Entity",
+                "_required": "true"
+            },
+            "field_name": {
+                "_format": "string",
+                "_label": "Field",
+                "_required": "true"
+            },
+            "_field_order": "id,entity_name,field_name,matcher,sub_value",
+            "id": {
+                "_format": "int",
+                "_label": "ID",
+                "_required": "true"
+            },
+            "_key": "id",
+            "matcher": {
+                "_format": "string",
+                "_label": "Regex Matcher",
+                "_required": "true"
+            },
+            "sub_value": {
+                "_format": "string",
+                "_label": "Substitute Value",
+                "_required": "true"
+            }
         },
-        "writeaccess": {
-            "_format": "bool",
-            "_label": "Write Access"
+        "rack": {
+            "cage_code": {
+                "_required": "true"
+            },
+            "data_center_code": {
+                "_required": "true"
+            },
+            "_key": "rack_code",
+            "rack_code": {
+                "_required": "false"
+            }
+        },
+        "role": {
+            "_field_order": "role_id,role_name",
+            "_key": "role_id",
+            "role_id": {
+                "_format": "string",
+                "_label": "Role",
+                "_required": "true"
+            },
+            "role_name": {
+                "_label": "Description",
+                "_required": "true"
+            }
+        },
+        "service_instance": {
+            "environment_name": {
+                "_enumeration": {
+                    "attribute": "name",
+                    "entity": "environments",
+                    "enumerator": [
+                        "lab",
+                        "production",
+                        "secondlevel",
+                        "testing"
+                    ]
+                },
+                "_field_category": "main",
+                "_label": "Environment",
+                "_required": "false"
+            },
+            "_field_order": "svc_id,name,type,note,environment_name",
+            "_key": "svc_id",
+            "name": {
+                "_label": "SVC Name",
+                "_required": "true"
+            },
+            "note": {
+                "_label": "Note",
+                "_required": "false"
+            },
+            "svc_id": {
+                "_label": "SVC ID",
+                "_required": "true"
+            },
+            "_type": {
+                "_label": "Type",
+                "_required": "false"
+            }
+        },
+        "service_instance_data": {
+            "data_id": {
+                "_label": "Data ID",
+                "_required": "true"
+            },
+            "data_key": {
+                "_label": "Key",
+                "_required": "true"
+            },
+            "data_value": {
+                "_label": "Value",
+                "_required": "true"
+            },
+            "_key": "data_id",
+            "svc_id": {
+                "_label": "SVC ID",
+                "_required": "true"
+            }
+        },
+        "system": {
+            "agent_type": {
+                "_flavor": "_fact",
+                "_label": "Agent Type",
+                "_required": "false"
+            },
+            "asset_tag_number": {
+                "_field_category": "HW Info",
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Asset Tag"
+            },
+            "audit_info": {
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "Phys Audit",
+                "_required": "false"
+            },
+            "bios_vendor": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Bios Vendor",
+                "_required": "false"
+            },
+            "bios_version": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Bios Version",
+                "_required": "false"
+            },
+            "cloud": {
+                "_label": "Cloud",
+                "_meta": "true",
+                "_required": "false"
+            },
+            "config_agent_output": {
+                "_field_category": "Puppet",
+                "_format": "text",
+                "_label": "Puppet Output",
+                "_meta": "true",
+                "_required": "false"
+            },
+            "config_agent_status": {
+                "_field_category": "Puppet",
+                "_label": "Puppet Status",
+                "_meta": "true",
+                "_required": "false"
+            },
+            "config_agent_summary": {
+                "_field_category": "Puppet",
+                "_label": "Puppet Summary",
+                "_meta": "true",
+                "_required": "false"
+            },
+            "config_agent_timestamp": {
+                "_field_category": "Puppet",
+                "_label": "Puppet Timestamp",
+                "_meta": "true",
+                "_required": "false",
+                "_type": "date"
+            },
+            "disk_drive_count": {
+                "_field_category": "HW Info",
+                "_label": "Drive Count",
+                "_required": "false"
+            },
+            "drac": {
+                "_field_category": "HW Info",
+                "_label": "DRAC",
+                "_required": "false"
+            },
+            "drac_macaddress": {
+                "_field_category": "HW Info",
+                "_label": "Drac MacAddress",
+                "_required": "false"
+            },
+            "drac_version": {
+                "_field_category": "HW Info",
+                "_label": "Drac Version",
+                "_required": "false"
+            },
+            "environment_name": {
+                "default_value": "production",
+                "_enumeration": {
+                    "attribute": "name",
+                    "entity": "environments",
+                    "enumerator": [
+                        "lab",
+                        "production",
+                        "secondlevel",
+                        "testing"
+                    ]
+                },
+                "_field_category": "main",
+                "_label": "Environment",
+                "_required": "false"
+            },
+            "_extends": "/lexicon/entities/device",
+            "_field_order": "fqdn,status,inventory_component_type,roles,ipaddress,environment_name,svc_id,notes",
+            "guest_fqdns": {
+                "fqdn": {
+                    "_required": "false"
+                },
+                "_label": "Guest Hosts",
+                "_type": "array"
+            },
+            "hardware_class": {
+                "_enumeration": {
+                    "attribute": "hardware_class",
+                    "entity": "hardware_model",
+                    "enumerator": [
+                        "1USystem",
+                        "2USystem",
+                        "3USystem",
+                        "4USystem"
+                    ]
+                },
+                "_field_category": "HW Info",
+                "_label": "Class",
+                "_required": "false"
+            },
+            "host_fqdn": {
+                "_label": "Parent Host",
+                "_required": "false"
+            },
+            "image": {
+                "_label": "System Image",
+                "_meta": "true",
+                "_required": "false"
+            },
+            "interfaces": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "NICs",
+                "_required": "false"
+            },
+            "ipmi_ip": {
+                "_field_category": "HW Info",
+                "_label": "IPMI Address"
+            },
+            "ipv6address": {
+                "_label": "IPv6 Address",
+                "_required": "false"
+            },
+            "is_virtual": {
+                "_label": "Virtual",
+                "_required": "false"
+            },
+            "kernelrelease": {
+                "_fact": "kernelrelease",
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "Kernel Release"
+            },
+            "_key": "fqdn",
+            "memorysize": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Memory",
+                "_required": "false"
+            },
+            "netdriver": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "Netdriver"
+            },
+            "netdriver_duplex": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "Netdriver Duplex"
+            },
+            "netdriver_firmware": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "Netdriver Firmware"
+            },
+            "netdriver_speed": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "Netdriver Speed"
+            },
+            "netdriver_version": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "string",
+                "_label": "Netdriver Version"
+            },
+            "notes": {
+                "_field_category": "main",
+                "_format": "text",
+                "_label": "Notes",
+                "_required": "false"
+            },
+            "operatingsystem": {
+                "_enumeration": {
+                    "attribute": "operating_system",
+                    "entity": "system",
+                    "enumerator": [
+                        "Debian",
+                        "RedHat"
+                    ],
+                    "forceselect": "false"
+                },
+                "_fact": "operatingsystem",
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "OS"
+            },
+            "operatingsystemrelease": {
+                "_fact": "operatingsystemrelease",
+                "_flavor": "config",
+                "_format": "string",
+                "_label": "OS Release"
+            },
+            "physical_processor_count": {
+                "_field_category": "HW Info",
+                "_label": "Processor Count",
+                "_required": "false"
+            },
+            "power_consumption_avg": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "int",
+                "_label": "Average Power Consumption(Watts)",
+                "_validation": {
+                    "is_int": {}
+                }
+            },
+            "power_consumption_peak": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "int",
+                "_label": "Peak Power Consumption(Watts)",
+                "_validation": {
+                    "is_int": {}
+                }
+            },
+            "power_consumption_peak_time": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "int_timestamp",
+                "_label": "Time of Peak Power (Unix Timestamp, UTC)"
+            },
+            "power_supply_watts": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_format": "float",
+                "_label": "Power Supply(Watts)",
+                "_validation": {
+                    "is_float": {}
+                }
+            },
+            "raidbaddrives": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Raid Bad Drives",
+                "_required": "false"
+            },
+            "raidcontroller": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Raid Controller",
+                "_required": "false"
+            },
+            "raiddrives": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Raid Drives",
+                "_required": "false"
+            },
+            "raiddrivestatus": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Raid Drive Status",
+                "_required": "false"
+            },
+            "raidtype": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Raid Type",
+                "_required": "false"
+            },
+            "raidvolumes": {
+                "_field_category": "HW Info",
+                "_flavor": "_fact",
+                "_label": "Raid Volumes",
+                "_required": "false"
+            },
+            "role_version": {
+                "_fact": "notestore_version",
+                "field_catetory": "main",
+                "_label": "Role Version"
+            },
+            "roles": {
+                "_enumeration": {
+                    "attribute": "role_id",
+                    "entity": "role",
+                    "enumerator": [
+                        "hadoop_datanode",
+                        "nagios",
+                        "repo::apt"
+                    ],
+                    "forceselect": "true"
+                },
+                "_field_category": "main",
+                "_format": "multiselect",
+                "_label": "Roles"
+            },
+            "size": {
+                "_label": "Instance Size",
+                "_meta": "true",
+                "_required": "false"
+            },
+            "svc_id": {
+                "_enumeration": {
+                    "attribute": "name",
+                    "entity": "service_instance",
+                    "enumerator": [
+                        "cmdb",
+                        "ldap_ba1",
+                        "testsvc"
+                    ]
+                },
+                "_field_category": "main",
+                "_label": "Service Record",
+                "_required": "false"
+            },
+            "tags": {
+                "_label": "JSON Tags",
+                "_required": "false"
+            },
+            "virtual": {
+                "_flavor": "_fact",
+                "_label": "VM Type",
+                "_required": "false"
+            },
+            "warranty_info": {
+                "_field_category": "HW Info",
+                "_format": "text",
+                "_label": "Warranty Info",
+                "_required": "false"
+            }
+        },
+        "user": {
+            "_field_order": "username,systemuser,groups,writeaccess,sshkey",
+            "groups": {
+                "_enumeration": {
+                    "enumerator": [
+                        "OPS",
+                        "IT",
+                        "QA"
+                    ]
+                },
+                "_format": "array",
+                "_label": "Groups"
+            },
+            "_key": "username",
+            "sshkey": {
+                "_format": "text",
+                "_label": "SSH Key"
+            },
+            "systemuser": {
+                "_format": "bool",
+                "_label": "System User"
+            },
+            "username": {
+                "_format": "string",
+                "_label": "Username"
+            },
+            "writeaccess": {
+                "_format": "bool",
+                "_label": "Write Access"
+            }
         }
     }
 }
