@@ -162,9 +162,9 @@ $tree_extended = &eat_json( &make_json($tree) );
 # loop through entities and add base attributes to things that subclass other stuff
 foreach ( keys( %{ $tree_extended->{entities} } ) )
 {
-    if ( $tree_extended->{entities}->{$_}->{extends} )
+    if ( $tree_extended->{entities}->{$_}->{_extends} )
     {
-        my $extends = &lkupLexiconPath( $tree->{entities}->{$_}->{extends} );
+        my $extends = &lkupLexiconPath( $tree->{entities}->{$_}->{_extends} );
         foreach my $attr ( keys(%$extends) )
         {
             $tree_extended->{entities}->{$_}->{$attr} = $extends->{$attr};
