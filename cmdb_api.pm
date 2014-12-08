@@ -33,9 +33,8 @@ use Apache2::Const -compile => qw(OK HTTP_NOT_FOUND HTTP_OK HTTP_FAILED_DEPENDEN
 use APR::Const -compile     => qw(SUCCESS BLOCK_READ);
 use constant IOBUFSIZE      => 8192;
 use JSON;
-use XML::Parser;
-use XML::Simple;
 use Apache::DBI;
+use XML::Simple;
 use Date::Manip;
 use Optconfig;
 use DBI;
@@ -64,7 +63,7 @@ my $opt = Optconfig->new(
         'debug'                         => 1,
         'prism_domain'                  => 'prism.ppops.net',
         'logconfig'                     => '/var/www/cmdb_api/log4perl.conf',
-        'lexicon'                       => '/var/www/cmdb_api/pp_lexicon.xml',
+        'lexicon'                       => '/var/www/cmdb_api/lexicon.json',
         'ipaddress_attribute'           => "ip_address",
         "traffic_control_search_fields" => [ "fqdn", "macaddress", "ipaddress" ],
         'entities'                      => {
@@ -139,8 +138,14 @@ my $valid_entities = $opt->{'entities'};
 
 my $versions = ['v1'];
 
-$parser = XML::Simple->new();
-eval { $tree = $parser->XMLin($lexicon); };
+eval { 
+    if (open (my $json_str, $lexicon))
+    {
+      local $/ = undef;
+      $tree = eat_json(<$json_str>);
+      close($json_str);
+    }
+};
 
 # show error and die if xml parsing of the lexicon failed
 if ($@)
@@ -159,7 +164,7 @@ foreach ( keys( %{ $tree_extended->{entities} } ) )
 {
     if ( $tree_extended->{entities}->{$_}->{extends} )
     {
-        my $extends = &lkupXMLPath( $tree->{entities}->{$_}->{extends} );
+        my $extends = &lkupLexiconPath( $tree->{entities}->{$_}->{extends} );
         foreach my $attr ( keys(%$extends) )
         {
             $tree_extended->{entities}->{$_}->{$attr} = $extends->{$attr};
@@ -169,7 +174,7 @@ foreach ( keys( %{ $tree_extended->{entities} } ) )
 $logger->debug( "lexicon: " . &make_json( $tree, { pretty => 1, allow_nonref => 1 } ) ) if ( $logger->is_debug() );
 $logger->debug( "lexicon extended: " . &make_json( $tree_extended, { pretty => 1, allow_nonref => 1 } ) ) if ( $logger->is_debug() );
 
-sub lkupXMLPath()
+sub lkupLexiconPath()
 {
     my $str = shift;
     my @seg = split( '/', $str );
@@ -253,11 +258,11 @@ sub handler()
                         {
                             if (   $lex->{$_}->{$attr}
                                 && ref( $lex->{$_}->{$attr} ) eq 'HASH'
-                                && defined $lex->{$_}->{$attr}->{'enumeration'}
-                                && defined $lex->{$_}->{$attr}->{'enumeration'}->{'entity'}
-                                && defined $lex->{$_}->{$attr}->{'enumeration'}->{'attribute'} )
+                                && defined $lex->{$_}->{$attr}->{'_enumeration'}
+                                && defined $lex->{$_}->{$attr}->{'_enumeration'}->{'entity'}
+                                && defined $lex->{$_}->{$attr}->{'_enumeration'}->{'attribute'} )
                             {
-                                $lex->{$_}->{$attr}->{'enumeration'}->{'enumerator'} = &doColumn_lkupGET( $requestObject, $lex->{$_}{$attr}{'enumeration'}{'entity'}, $lex->{$_}{$attr}{'enumeration'}->{'attribute'} );
+                                $lex->{$_}->{$attr}->{'_enumeration'}->{'enumerator'} = &doColumn_lkupGET( $requestObject, $lex->{$_}{$attr}{'_enumeration'}{'entity'}, $lex->{$_}{$attr}{'_enumeration'}->{'attribute'} );
                             }
                         }
                     }
@@ -402,14 +407,14 @@ sub getFieldList()
     my @arr;
     foreach ( keys( %{ $tree->{entities}->{$entity} } ) )
     {
-        next if ( $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' || $_ eq 'field_order');
+        next if ( $_ =~ /^_/ || $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' || $_ eq 'field_order');
         push( @arr, $_ );
     }
     if ( $entity eq 'system' && !$bare )
     {
         foreach ( keys( %{ $tree->{entities}->{device} } ) )
         {
-            next if ( $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' || $_ eq 'field_order' );
+            next if ( $_ =~ /^_/ || $_ eq 'key' || $_ eq 'extends' || $_ eq 'table' || $_ eq 'field_order' );
             push( @arr, $_ );
         }
     }
@@ -590,9 +595,9 @@ sub doTrafficControlPOST()
     my $data_assembled = { 'fqdn' => $data->{'fqdn'} };
     foreach my $attr ( keys( %{ $tree_extended->{'entities'}->{'system'} } ) )
     {
-        if ( ref( $tree_extended->{'entities'}->{'system'}->{$attr} ) eq 'HASH' && $tree_extended->{'entities'}->{'system'}->{$attr}->{'fact'} )
+        if ( ref( $tree_extended->{'entities'}->{'system'}->{$attr} ) eq 'HASH' && $tree_extended->{'entities'}->{'system'}->{$attr}->{'_fact'} )
         {
-            foreach my $fact_lookup ( split( ',', $tree_extended->{'entities'}->{'system'}->{$attr}->{'fact'} ) )
+            foreach my $fact_lookup ( split( ',', $tree_extended->{'entities'}->{'system'}->{$attr}->{'_fact'} ) )
             {
                 $logger->debug("doing fact lookup for $attr with $fact_lookup");
                 if ( $data->{$fact_lookup} )
@@ -945,7 +950,7 @@ sub recordFetch()
             metaData => {
                 root          => 'records',
                 totalProperty => 'total',
-                id            => $tree->{entities}->{ $$requestObject{'entity'} }->{key},
+                id            => $tree->{entities}->{ $$requestObject{'entity'} }->{_key},
                 fields        => &getFieldList( $$requestObject{'entity'} )
             }
         };
@@ -1068,7 +1073,7 @@ sub doGenericPUT
                     {},
                     (
                         $entity,
-                        $$lkup_data{ $tree->{entities}->{ $$requestObject{'entity'} }->{key} },
+                        $$lkup_data{ $tree->{entities}->{ $$requestObject{'entity'} }->{_key} },
                         $f,                                        #field
                         $$lkup_data{$f},                           #old val
                         $$data{$f},                                # new val
@@ -1089,7 +1094,7 @@ sub doGenericPUT
     my $sql_set = join( ',', @sql );
 
     # assemple final sql
-    $sql = "update $entity set $sql_set where " . $tree->{entities}->{$entity}->{key} . "=?";
+    $sql = "update $entity set $sql_set where " . $tree->{entities}->{$entity}->{_key} . "=?";
     push( @$parms, $$requestObject{'path'}[0] );
 
     ## do sql and record any errors
@@ -1118,9 +1123,9 @@ sub doGenericPUT
         $dbs->commit;
 
         # check to see if key value was chnaged during this put, and adjust for GET
-        if ( $$data{ $tree->{entities}->{ $$requestObject{'entity'} }->{key} } )
+        if ( $$data{ $tree->{entities}->{ $$requestObject{'entity'} }->{_key} } )
         {
-            $$requestObject{'path'}[0] = $$data{ $tree->{entities}->{ $$requestObject{'entity'} }->{key} };
+            $$requestObject{'path'}[0] = $$data{ $tree->{entities}->{ $$requestObject{'entity'} }->{_key} };
         }
         return &doGenericGET($requestObject);
     }
@@ -1181,7 +1186,7 @@ sub doGenericPOST
         {},
         (
             $entity,
-            $$data{ $tree->{entities}->{ $$requestObject{'entity'} }->{key} },
+            $$data{ $tree->{entities}->{ $$requestObject{'entity'} }->{_key} },
             'record',                                  #field
             '',                                        #old val
             'CREATED',                                 # new val
@@ -1202,7 +1207,7 @@ sub doGenericPOST
         $$requestObject{'stat'} = Apache2::Const::HTTP_INTERNAL_SERVER_ERROR;
         return $sth->err . " : " . $sth->errstr;
     }
-    $$requestObject{'headers_out'} = [ 'Location', "/cmdb_api/v1/" . $entity . "/" . $$data{ $tree->{entities}->{ $$requestObject{'entity'} }->{key} } ];
+    $$requestObject{'headers_out'} = [ 'Location', "/cmdb_api/v1/" . $entity . "/" . $$data{ $tree->{entities}->{ $$requestObject{'entity'} }->{_key} } ];
     return;
 }
 
@@ -1382,7 +1387,7 @@ sub doAclPUT
                     {},
                     (
                         $entity,
-                        $$lkup_data{ $tree->{entities}->{ $$requestObject{'entity'} }->{key} },
+                        $$lkup_data{ $tree->{entities}->{ $$requestObject{'entity'} }->{_key} },
                         $f,                                        #field
                         $$lkup_data{$f},                           #old val
                         $$data{$f},                                # new val
@@ -1397,7 +1402,7 @@ sub doAclPUT
     my $sql_set = join( ',', @sql );
 
     # assemple final sql
-    $sql = "update $entity set $sql_set where " . $tree->{entities}->{$entity}->{key} . "=?";
+    $sql = "update $entity set $sql_set where " . $tree->{entities}->{$entity}->{_key} . "=?";
     push( @$parms, $$requestObject{'path'}[0] );
 
     ## do sql and record any errors
@@ -1460,8 +1465,8 @@ sub doChangeQueueGET()
     # check for path key value and add if specified
     if ( $$requestObject{'path'}[0] )
     {
-        $logger->debug("found $tree->{entities}->{$$requestObject{'entity'}}->{key} : $$requestObject{'path'}[0] in url") if ( $logger->is_debug() );
-        $sql .= " $tree->{entities}->{$$requestObject{'entity'}}->{key} like ?";
+        $logger->debug("found $tree->{entities}->{$$requestObject{'entity'}}->{_key} : $$requestObject{'path'}[0] in url") if ( $logger->is_debug() );
+        $sql .= " $tree->{entities}->{$$requestObject{'entity'}}->{_key} like ?";
         push( @$parms, $$requestObject{'path'}[0] );
     }
     $logger->debug("getparms: $$requestObject{getparams}") if ( $logger->is_debug() );
@@ -1517,8 +1522,8 @@ sub doGenericGET()
     # check for path key value and add if specified
     if ( $$requestObject{'path'}[0] )
     {
-        $logger->debug("found $tree->{entities}->{$$requestObject{'entity'}}->{key} : $$requestObject{'path'}[0] in url") if ( $logger->is_debug() );
-        $sql .= " $tree->{entities}->{$$requestObject{'entity'}}->{key} like ?";
+        $logger->debug("found $tree->{entities}->{$$requestObject{'entity'}}->{_key} : $$requestObject{'path'}[0] in url") if ( $logger->is_debug() );
+        $sql .= " $tree->{entities}->{$$requestObject{'entity'}}->{_key} like ?";
         push( @$parms, $$requestObject{'path'}[0] );
     }
     elsif ( $$requestObject{getparams} )
@@ -2715,7 +2720,7 @@ sub doSystemPUT()
                     {},
                     (
                         'device',
-                        $$lkup_data{ $tree->{entities}->{ $$requestObject{'entity'} }->{key} },
+                        $$lkup_data{ $tree->{entities}->{ $$requestObject{'entity'} }->{_key} },
                         $_,                                        #field
                         $$lkup_data{$_},                           #old val
                         $$data{$_},                                # new val
@@ -2798,7 +2803,7 @@ sub doSystemPUT()
                     {},
                     (
                         'device',
-                        $$lkup_data{ $tree->{entities}->{ $$requestObject{'entity'} }->{key} },
+                        $$lkup_data{ $tree->{entities}->{ $$requestObject{'entity'} }->{_key} },
                         $_,                                        #field
                         $$lkup_data{$_},                           #old val
                         $$data{$_},                                # new val
