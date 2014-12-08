@@ -633,7 +633,6 @@
                 "_field_category": "main",
                 "_label": "Environment",
                 "_required": "false",
-                "_extends": "device"
             },
             "_extends": "/lexicon/entities/device",
             "_field_order": "fqdn,status,inventory_component_type,roles,ipaddress,environment_name,svc_id,notes",
