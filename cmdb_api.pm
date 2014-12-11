@@ -1713,7 +1713,7 @@ sub doEnvironmentsServicesGET()
     pop @parents;
     %hash = ();
     my $list = join( ', ', map { "'$_'" } reverse(@parents) );
-    $sql = "select name, environment_name, note,  s.svc_id, type, data_key, data_value from " . " (select name, environment_name, note,  svc_id, type from service_instance " . "  where type != 'environment' ";
+    $sql = "select name, environment_name, note,  s.svc_id, type, data_key, data_value from " . " (select name, environment_name, note,  svc_id, type from service_instance " . "  where name like '%' ";
 
     if ( defined $service )
     {
@@ -2184,7 +2184,7 @@ sub doEnvironmentsServicesPOST()
         my @columns;
         my @values;
 
-        for my $field (qw/name environment_name type notes/)
+        for my $field (qw/name environment_name type note/)
         {
             if ( defined $data->{$field} )
             {
