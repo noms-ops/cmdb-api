@@ -2200,14 +2200,16 @@ sub doEnvironmentsServicesPOST()
         executeDbStatement( $sth, $sql );
         $svc_id = $sth->{mysql_insertid};
 
-        # Create service_instance_data records
-        $sql = "insert into service_instance_data " . "(svc_id, data_key, data_value) values ";
+        if(scalar(keys(%$data)) > 0)
+        {
+            # Create service_instance_data records
+            $sql = "insert into service_instance_data " . "(svc_id, data_key, data_value) values ";
 
-        $sql .= join( ',', map { sprintf( "('%s','%s','%s')", $svc_id, $_, $data->{$_} ) } keys %$data );
+            $sql .= join( ',', map { sprintf( "('%s','%s','%s')", $svc_id, $_, $data->{$_} ) } keys %$data );
 
-        $sth = $dbh->prepare($sql);
-        executeDbStatement( $sth, $sql );
-
+            $sth = $dbh->prepare($sql);
+            executeDbStatement( $sth, $sql );
+        }
         insertAuditEntry( $dbh, $requestObject, 'services', "$environment/$service", 'record', '', 'CREATED', $$now[0] );
         $dbh->commit;
     };
