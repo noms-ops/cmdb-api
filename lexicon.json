@@ -358,7 +358,7 @@
                 "_label": "Note",
                 "_required": "false"
             },
-            "_type": {
+            "type": {
                 "_label": "Type",
                 "_required": "false"
             }
@@ -632,7 +632,7 @@
                 },
                 "_field_category": "main",
                 "_label": "Environment",
-                "_required": "false",
+                "_required": "false"
             },
             "_extends": "/lexicon/entities/device",
             "_field_order": "fqdn,status,inventory_component_type,roles,ipaddress,environment_name,svc_id,notes",
