@@ -1029,7 +1029,7 @@ sub doGenericPUT
             change_user    => $requestObject->{'user'}->{'username'},
             change_time    => $$now[0],
             entity         => $$requestObject{'entity'},
-            entity_key     => $$lkup_data{ $tree->{'entities'}->{ $$requestObject{'entity'} }->{'key'} },
+            entity_key     => $$lkup_data{ $tree->{'entities'}->{ $$requestObject{'entity'} }->{'_key'} },
             change_content => &make_json($blocked_changes)
         };
         &doGenericPOST(
@@ -1343,7 +1343,7 @@ sub doAclPUT
             change_user    => $requestObject->{'user'}->{'username'},
             change_time    => $$now[0],
             entity         => $$requestObject{'entity'},
-            entity_key     => $$lkup_data{ $tree->{'entities'}->{ $$requestObject{'entity'} }->{'key'} },
+            entity_key     => $$lkup_data{ $tree->{'entities'}->{ $$requestObject{'entity'} }->{'_key'} },
             change_content => &make_json($blocked_changes)
         };
         &doGenericPOST(
@@ -1596,7 +1596,7 @@ sub doGenericDELETE
             return 'ACL blocked Delete: ' . &make_json($blocked_changes);
         }
 
-        $sql   = "delete from $requestObject->{'entity'} where $tree_extended->{entities}->{ $requestObject->{'entity'} }->{'key'} = ?";
+        $sql   = "delete from $requestObject->{'entity'} where $tree_extended->{entities}->{ $requestObject->{'entity'} }->{'_key'} = ?";
         $parms = [ $requestObject->{'path'}[0] ];
         $dbh->do( $sql, {}, @$parms );
         if ( $dbh->err )
@@ -2676,7 +2676,7 @@ sub doSystemPUT()
             change_user    => $requestObject->{'user'}->{'username'},
             change_time    => $$now[0],
             entity         => $$requestObject{'entity'},
-            entity_key     => $$lkup_data{ $tree->{'entities'}->{ $$requestObject{'entity'} }->{'key'} },
+            entity_key     => $$lkup_data{ $tree->{'entities'}->{ $$requestObject{'entity'} }->{'_key'} },
             change_content => &make_json($blocked_changes)
         };
         &doGenericPOST(
@@ -2685,7 +2685,7 @@ sub doSystemPUT()
                 body   => &make_json($change_item),
             }
         );
-        $logger->warn( "queued change for " . $$lkup_data{ $tree->{'entities'}->{ $$requestObject{'entity'} }->{'key'} } );
+        $logger->warn( "queued change for " . $$lkup_data{ $tree->{'entities'}->{ $$requestObject{'entity'} }->{'_key'} } );
     }
 
     # construct update sql for device table
