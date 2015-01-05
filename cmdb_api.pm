@@ -252,7 +252,6 @@ sub handler()
                     {
                         $lex->{$_} = $tree->{entities}->{$_};
                         no strict 'refs';
-
                         # check each attribute and populate enumerations if needed
                         foreach my $attr ( keys( %{ $lex->{$_} } ) )
                         {
@@ -2756,6 +2755,7 @@ sub doSystemPUT()
     if ( exists $$data{'fqdn'} && $$lkup_data{'fqdn'} ne $$data{'fqdn'} )
     {
         $fqdn = $$data{'fqdn'};
+        $$requestObject{'path'}[0] = $fqdn;
     }
 
     #update or insert into ip table
