@@ -839,11 +839,6 @@
                 "_enumeration": {
                     "attribute": "role_id",
                     "entity": "role",
-                    "enumerator": [
-                        "hadoop_datanode",
-                        "nagios",
-                        "repo::apt"
-                    ],
                     "forceselect": "true"
                 },
                 "_field_category": "main",
