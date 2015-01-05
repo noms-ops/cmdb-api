@@ -2443,6 +2443,7 @@ sub doEnvironmentsDELETE()
 sub doSystemDELETE()
 {
         my $requestObject = shift;
+        $$requestObject{'entity'} = 'device';
         return &doGenericDELETE($requestObject);
 }
 
