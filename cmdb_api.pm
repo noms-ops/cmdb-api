@@ -2440,6 +2440,12 @@ sub doEnvironmentsDELETE()
     }
 }
 
+sub doSystemDELETE()
+{
+        my $requestObject = shift;
+        return &doGenericDELETE($requestObject);
+}
+
 # special functions to handle device and systems
 sub doSystemGET()
 {
