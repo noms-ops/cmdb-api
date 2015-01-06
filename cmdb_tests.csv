@@ -6,7 +6,7 @@ lookup nonexistent system,,system,no.system.com,,GET,http://localhost:80,/cmdb_a
 ,"there is no delete function, this will always fail",system,test.test.com,,DELETE,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,,
 verify via audit ,,inv_audit,,"{""entity_key"":""test.test.com"",""field_name"":""notes"",""new_value"":""testnote""}",GET,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,new_value=testnote
 rename system,,system,test.test.com,"{""fqdn"":""test2.test.com"",""note"":""rename""}",PUT,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,fqdn=test2.test.com
-change system name back,,system,test2.test.com,"{""fqdn"":""test.test.com"",""note"":""rename""}",PUT,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,fqdn=test.test.com
+change system name via trafficcontrol,,fact,,"{""fqdn"":""test.test.com"",""ipaddress"":""10.10.0.1"",""note"":""rename""}",POST,http://localhost:80,/cmdb_api/v1/,,201,data,fqdn=test.test.com
 create datacenter,,data_center,DC1,"{""data_center_code"":""DC1"",""data_center_vendor"":""sample vendor""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/data_center/DC1
 ,,,,,,,,,,,
 create datacenter_subnet,,datacenter_subnet,,"{""data_center_code"":""DC1"",""subnet"":""10.10.0.0/24"",""notes"":""testsubnet"",""id"":1000}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location~/cmdb_api/v1/datacenter_subnet/1000
