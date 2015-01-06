@@ -570,16 +570,17 @@ sub doTrafficControlPOST()
     $requestObject->{'user'} = &doGenericGET( { entity => 'user', path => ['trafficcontrol'] } );
     my $data = &eat_json( $$requestObject{'body'}, { allow_nonref => 1 } );
     my ( $lkup_data, $lkup );
-    $logger->debug("TC got POST from agent") if ( $logger->is_debug() );
+    $logger->debug("TC got POST from agent, finding system with fields: " . join(',',@{ $opt->{'traffic_control_search_fields'} }) ) if ( $logger->is_debug() );
 
     foreach ( @{ $opt->{'traffic_control_search_fields'} } )
     {
         # skip serial if not dell tag
-        next if ( $_ eq 'serial_number' && length( $data->{$_} ) != 7 );
+        next if ( $_ eq 'serial_number' && length( $data->{$_} ) < 4 );
         $lkup = $dbh->selectall_arrayref( "select * from device where $_=?", { Slice => {} }, ( $data->{$_} ) );
-        if ( scalar(@$lkup) == 1 )
+       if ( scalar(@$lkup) == 1 )
         {
             $lkup_data = $$lkup[0];
+            $logger->debug("TC found system with $_ : $data->{$_}" );
             last;
         }
     }
