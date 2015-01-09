@@ -58,13 +58,13 @@ my $opt = Optconfig->new(
         'driver=s'                      => 'mysql',
         'dbuser=s'                      => 'dbuser',
         'dbpass=s'                      => 'dbpass',
-        'dbhost'                        => 'localhost',
+        'dbhost=s'                        => 'localhost',
         'database'                      => 'inventory',
         'debug'                         => 1,
-        'prism_domain'                  => 'prism.ppops.net',
-        'logconfig'                     => '/var/www/cmdb_api/log4perl.conf',
-        'lexicon'                       => '/var/www/cmdb_api/lexicon.json',
-        'ipaddress_attribute'           => "ip_address",
+        'prism_domain=s'                  => 'prism.ppops.net',
+        'logconfig=s'                     => '/var/www/cmdb_api/log4perl.conf',
+        'lexicon=s'                       => '/var/www/cmdb_api/lexicon.json',
+        'ipaddress_attribute=s'           => "ip_address",
         "traffic_control_search_fields" => [ "fqdn", "macaddress", "ipaddress" ],
         'entities'                      => {
             acl                   => 'Acl',
@@ -1758,13 +1758,12 @@ sub doEnvironmentsServicesGET()
         my $svc   = $hash{ $data->{'name'} };
         my $key   = $data->{'data_key'};
         my $value = $data->{'data_value'};
-        next if ( not defined $key  || grep(/^$key$/,['name','note','type','svc_id','environment_name'] ) );
+        next if ( not defined $key  || grep(/^$key$/,@{&getFieldList('service_instance')}) );
         # next if ( ( not defined $key ) || exists $svc->{$key} );
 
         if ($environment_tag)
         {
             my $inherited=0;
-            $logger->debug("TEST $key  " . $svc->{$key});
             if(exists $svc->{$key})
             {
                 $inherited = $svc->{$key};  
@@ -1918,7 +1917,7 @@ sub doEnvironmentsServicesPUT()
 
     eval {
         # Get service_instance record for the requested service
-        $sql = "select svc_id,type,name,environment_name,note from service_instance where environment_name=? and name=? and type!='environment'";
+        $sql = "select svc_id,type,name,environment_name,note from service_instance where environment_name=? and name=?";
         $sth = $dbh->prepare($sql);
         executeDbStatement( $sth, $sql, $environment, $service );
         $lkup_data = $sth->fetchall_arrayref( {}, undef );
@@ -2236,7 +2235,7 @@ sub doEnvironmentsServicesPOST()
 
     return $error if ( defined $error );
 
-    $$requestObject{'headers_out'} = [ 'Location', "/cmndb_api/v1/environments/" . $environment . "/services/" . $service ];
+    $$requestObject{'headers_out'} = [ 'Location', "/cmdb_api/v1/environments/" . $environment . "/services/" . $service ];
     return;
 }
 
