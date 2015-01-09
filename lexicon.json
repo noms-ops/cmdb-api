@@ -513,7 +513,7 @@
                 "_label": "SVC ID",
                 "_required": "true"
             },
-            "_type": {
+            "type": {
                 "_label": "Type",
                 "_required": "false"
             }
