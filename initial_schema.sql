@@ -241,8 +241,10 @@ CREATE TABLE `service_instance_data` (
   `svc_id` mediumint(9) NOT NULL,
   `data_key` varchar(45) NOT NULL,
   `data_value` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`data_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`data_id`),
+  KEY `svc_id` (`svc_id`),
+  CONSTRAINT `service_instance_data_ibfk_1` FOREIGN KEY (`svc_id`) REFERENCES `service_instance` (`svc_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=10079 DEFAULT CHARSET=utf8
 
 --
 -- Table structure for table `snat`
