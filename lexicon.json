@@ -868,6 +868,10 @@
                 "_label": "JSON Tags",
                 "_required": "false"
             },
+            "uuid": {
+                "_flavor": "fact",
+                "_label": "UUID"
+            },
             "virtual": {
                 "_flavor": "_fact",
                 "_label": "VM Type",
