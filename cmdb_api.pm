@@ -2847,10 +2847,10 @@ sub applyDefaults()
     my $fields = &getFieldList( $entity );
     foreach (@$fields)
     {
-        if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{ $entity }->{$_}->{default_value} )
+        if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{ $entity }->{$_}->{_default_value} )
         {
-            $logger->debug("using ($entity) default value '$tree_extended->{entities}->{ $entity }->{$_}->{default_value}' for $_");
-            $$data{$_} = $tree_extended->{entities}->{ $entity }->{$_}->{default_value};
+            $logger->debug("using ($entity) default value '$tree_extended->{entities}->{ $entity }->{$_}->{_default_value}' for $_");
+            $$data{$_} = $tree_extended->{entities}->{ $entity }->{$_}->{_default_value};
         }
     }
     return $data;
