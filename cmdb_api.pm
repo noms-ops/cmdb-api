@@ -147,7 +147,7 @@ eval {
     }
 };
 
-# show error and die if xml parsing of the lexicon failed
+# show error and die if parsing of the lexicon failed
 if ($@)
 {
     $logger->fatal("error parsing $lexicon\n$@");
@@ -2440,6 +2440,11 @@ sub doEnvironmentsDELETE()
     }
 }
 
+sub isChanged()
+{
+    return 1;
+}
+
 sub doSystemDELETE()
 {
         my $requestObject = shift;
@@ -2615,6 +2620,8 @@ sub doSystemPUT()
             return "stored record has already been modified";
         }
     }
+    delete $$data{'date_modified'};
+    delete $$data{'date_created'};
     if ( $$lkup_data{'metaData'} )
     {
         $lkup_data = $$lkup_data{'records'}[0];
@@ -2713,7 +2720,7 @@ sub doSystemPUT()
             }
 
             #audit
-            if ( !$tree_extended->{entities}->{'system'}->{$_}->{meta} )
+            if ( !$tree_extended->{entities}->{'system'}->{$_}->{meta} && &isChanged($lkup_data,$data,$_) )
             {
                 $dbs->do(
                     'insert into inv_audit set 
@@ -2797,7 +2804,7 @@ sub doSystemPUT()
             }
 
             #audit
-            if ( !$tree_extended->{entities}->{'system'}->{$_}->{meta} )
+            if ( !$tree_extended->{entities}->{'system'}->{$_}->{meta} && &isChanged($lkup_data,$data,$_))
             {
                 $dbs->do(
                     'insert into inv_audit set 
