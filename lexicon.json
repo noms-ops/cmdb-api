@@ -166,7 +166,7 @@
                 "_required": "true"
             },
             "inventory_component_type": {
-                "default_value": "system",
+                "_default_value": "system",
                 "_enumeration": {
                     "enumerator": [
                         "blade_chassis",
@@ -619,7 +619,7 @@
                 "_required": "false"
             },
             "environment_name": {
-                "default_value": "production",
+                "_default_value": "production",
                 "_enumeration": {
                     "attribute": "name",
                     "entity": "environments",
