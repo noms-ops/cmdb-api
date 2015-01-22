@@ -2442,6 +2442,12 @@ sub doEnvironmentsDELETE()
 
 sub isChanged()
 {
+    my ($old,$new,$field)=@_;
+    # $logger->info("TESTCHANGED--$field--$$old{$field}=$$new{$field}--");
+    if ("$$old{$field}" eq "$$new{$field}")
+    {
+        return 0;
+    }
     return 1;
 }
 
