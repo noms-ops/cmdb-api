@@ -283,24 +283,7 @@
                 "_format": "string",
                 "_label": "Status",
                 "_required": "false",
-                "_validation": {
-                    "is_string": {}
-                }
-            },
-            "system_type": {
-                "_enumeration": {
-                    "enumerator": [
-                        "POD",
-                        "Archiving",
-                        "Core",
-                        "EDN",
-                        "Eng"
-                    ]
-                },
-                "_flavor": "config",
-                "_format": "string",
-                "_label": "Business",
-                "_required": "false",
+                "_default_value": "idle",
                 "_validation": {
                     "is_string": {}
                 }
