@@ -11,4 +11,4 @@ https://github.com/evernote/noms-client/wiki
 The API works very well with the UI project 
 CMDB-UI (https://github.com/isaacfinnegan/cmdb-ui) - Web-based GUI for the NOMS CMDB
 
-
+More information can be found on the cmdb api wiki: https://github.com/isaacfinnegan/cmdb-api/wiki
