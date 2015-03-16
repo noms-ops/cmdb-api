@@ -38,6 +38,7 @@ use XML::Simple;
 use Date::Manip;
 use Optconfig;
 use DBI;
+use Data::Dumper;
 use NOMS::JCEL;
 
 sub eat_json
@@ -131,6 +132,9 @@ unless ($lexicon)
 # database connection
 our $dbh;
 
+# apache request
+our $r;
+
 #valid api types. these must exist and be parsable in the lexicon if they are 'Generic'
 # or have provided do<ENTITY>GET/PUT/POST functions
 
@@ -192,7 +196,7 @@ sub lkupLexiconPath()
 sub handler()
 {
     $dbh = DBI->connect( "DBI:$DRIVER:database=$DATABASE;host=$DBHOST", $DBUSER, $DBPASS );
-    my $r      = shift;
+    $r      = shift;
     my $up_uri = $r->unparsed_uri();
     $up_uri =~ s/.+\?//;
     my $uri = uri_unescape($up_uri);
@@ -208,6 +212,7 @@ sub handler()
     $$requestObject{'pathstr'}        = $req->uri();
     $$requestObject{'user'}           = &doGenericGET( { entity => 'user', path => [ $req->user ] } ) if $req->user;
     $$requestObject{'http_auth_user'} = $req->user if $req->user;
+    $$requestObject{'request_object'} = $r;
     # apache 2.4 doesn't have this anymore
     if( $connection->can('remote_ip') )
     {
@@ -283,7 +288,6 @@ sub handler()
                 $r->print( &make_json( $tree->{entities}->{ $requestObject->{'entity'} }, { pretty => 1, allow_nonref => 1 } ) );
                 return Apache2::Const::OK;
             }
-
         }
 
         # check for valid entity
@@ -311,6 +315,11 @@ sub handler()
         if ( $$requestObject{'headers_out'} )
         {
             $r->headers_out->add( $$requestObject{'headers_out'}[0] => $$requestObject{'headers_out'}[1] );
+        }
+        if($data eq 'killchild')
+        {
+            $r->child_terminate();
+            undef $data;
         }
 
         #TODO make output format based on accept content header
@@ -909,6 +918,27 @@ sub doSql()
     my $sql   = shift;
     my $parms = shift;
     my $dbh   = DBI->connect( "DBI:$DRIVER:database=$DATABASE;host=$DBHOST", $DBUSER, $DBPASS );
+
+    if ($dbh == undef)
+    {
+
+        $logger->error("detected bad db handle,  redirecting to self and terminating apache child");
+        print STDERR "detected bad db handle,  redirecting to self and terminating apache child";
+        # check for bad db handle and redirect to self
+        $r->headers_out->set(Location => $r->unparsed_uri() );
+        no strict 'subs';
+        $r->status(Apache2::Const::HTTP_MOVED_TEMPORARILY);
+
+        # no kill of this child, situations have been seen where this apache child will
+        # never again get a good db handle
+        $r->child_terminate();
+
+        # exiting here, as returning anything will require refactoring all methods that 
+        # call this to handles the error and bubble it up to handler()
+        exit;
+
+
+    }
 
     my $sth = $dbh->prepare($sql);
     my $sql_out;
