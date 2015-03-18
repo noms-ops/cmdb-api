@@ -919,7 +919,7 @@ sub doSql()
     my $parms = shift;
     my $dbh   = DBI->connect( "DBI:$DRIVER:database=$DATABASE;host=$DBHOST", $DBUSER, $DBPASS );
 
-    if ($dbh == undef)
+    if (!defined($dbh))
     {
 
         $logger->error("detected bad db handle,  redirecting to self and terminating apache child");
