@@ -1788,7 +1788,8 @@ sub doEnvironmentsServicesGET()
         my $svc   = $hash{ $data->{'name'} };
         my $key   = $data->{'data_key'};
         my $value = $data->{'data_value'};
-        next if ( not defined $key  || grep(/^$key$/,@{&getFieldList('service_instance')}) );
+        next if ( not defined $key  );
+        next if ( grep(/^$key$/,@{&getFieldList('service_instance')}) );
         # next if ( ( not defined $key ) || exists $svc->{$key} );
 
         if ($environment_tag)
@@ -2697,13 +2698,13 @@ sub doSystemPUT()
     foreach (@$device_fields)
     {
         $$data{$_} = &doFieldNormalization( 'system', $_, $$data{$_} ) if exists $$data{$_};
-        $mtime = $$now[0] if ( exists $$data{$_} && !$tree_extended->{'entities'}->{'system'}->{$_}->{'meta'} );
+        $mtime = $$now[0] if ( exists $$data{$_} && !$tree_extended->{'entities'}->{'system'}->{$_}->{'_meta'} );
         delete $$data{$_} if ( defined $$data{$_} && defined $$lkup_data{$_} && $$data{$_} eq $$lkup_data{$_} );
     }
     foreach (@$meta_fields)
     {
         $$data{$_} = &doFieldNormalization( 'system', $_, $$data{$_} ) if exists $$data{$_};
-        $mtime = $$now[0] if ( exists $$data{$_} && !$tree_extended->{'entities'}->{'system'}->{$_}->{'meta'} );
+        $mtime = $$now[0] if ( exists $$data{$_} && !$tree_extended->{'entities'}->{'system'}->{$_}->{'_meta'} );
         delete $$data{$_} if ( defined $$data{$_} && defined $$lkup_data{$_} && $$data{$_} eq $$lkup_data{$_} );
     }
     my $blocked_changes = {};
