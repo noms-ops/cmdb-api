@@ -85,7 +85,7 @@ my $opt = Optconfig->new(
             nccsystemname         => 'ProvisionNcc',
             user                  => 'Generic',
             currentUser           => 'User',
-            inv_audit             => 'Generic',
+            inv_audit             => 'Audit',
             audit                 => 'Audit',
             inv_normalizer        => 'Generic',
             fact                  => 'TrafficControl',
@@ -505,7 +505,7 @@ sub ProcessRequest()
     else
     {
         $logger->error("no function found $func");
-        $$requestObject{'stat'} = Apache2::Const::HTTP_INTERNAL_SERVER_ERROR;
+        $$requestObject{'stat'} = Apache2::Const::HTTP_METHOD_NOT_ALLOWED;
         return 'no entity function';
     }
 }
@@ -548,14 +548,7 @@ sub doColumn_lkupGET()
 sub doAuditGET()
 {
     my $requestObject = shift;
-    my $entity        = $$requestObject{'path'}[0];
-    if ( $$valid_entities{$entity} eq 'System' )
-    {
-        $entity = 'device';
-    }
-    my $lkup = $$requestObject{'path'}[1];
-    my $sql  = 'select * from inv_audit where entity_name=? and entity_key=? order by change_time';
-    return &recordFetch( $requestObject, $sql, [ $entity, $lkup ] );
+    return doGenericGET($requestObject);
 }
 
 #special api to check current user for write access
