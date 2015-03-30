@@ -135,6 +135,8 @@ our $dbh;
 # apache request
 our $r;
 
+our $db_retry=0;
+
 #valid api types. these must exist and be parsable in the lexicon if they are 'Generic'
 # or have provided do<ENTITY>GET/PUT/POST functions
 
@@ -211,6 +213,17 @@ sub handler()
     @{ $$requestObject{'path'} } = split( '/', $req->uri() );
     $$requestObject{'pathstr'}        = $req->uri();
     $$requestObject{'user'}           = &doGenericGET( { entity => 'user', path => [ $req->user ] } ) if $req->user;
+            if($db_retry)
+            {
+               $db_retry=0;
+               $logger->error("(handler 1)detected bad db handle,  redirecting to self and terminating apache child");
+               $r->headers_out->set('Location' => ($r->subprocess_env('HTTPS') eq 'on' ? 'https' : 'http' ) . '://' . $r->hostname() . $r->unparsed_uri() );
+               no strict 'subs';
+               $r->status(302);
+               $r->child_terminate();
+               return Apache2::Const::REDIRECT;
+          }
+
     $$requestObject{'http_auth_user'} = $req->user if $req->user;
     $$requestObject{'request_object'} = $r;
     # apache 2.4 doesn't have this anymore
@@ -264,9 +277,9 @@ sub handler()
                                 && ref( $lex->{$_}->{$attr} ) eq 'HASH'
                                 && defined $lex->{$_}->{$attr}->{'_enumeration'}
                                 && defined $lex->{$_}->{$attr}->{'_enumeration'}->{'entity'}
-                                && defined $lex->{$_}->{$attr}->{'_enumeration'}->{'attribute'} )
+                            && defined $lex->{$_}->{$attr}->{'_enumeration'}->{'attribute'} )
                             {
-                                $lex->{$_}->{$attr}->{'_enumeration'}->{'enumerator'} = &doColumn_lkupGET( $requestObject, $lex->{$_}{$attr}{'_enumeration'}{'entity'}, $lex->{$_}{$attr}{'_enumeration'}->{'attribute'} );
+                            $lex->{$_}->{$attr}->{'_enumeration'}->{'enumerator'} = &doColumn_lkupGET( $requestObject, $lex->{$_}{$attr}{'_enumeration'}{'entity'}, $lex->{$_}{$attr}{'_enumeration'}->{'attribute'} );
                             }
                         }
                     }
@@ -301,6 +314,18 @@ sub handler()
 
         #deal with the connection and produce data
         $data = &ProcessRequest($requestObject);
+
+        if($db_retry)
+        {
+            $db_retry=0;
+            $logger->error("(handler 2)detected bad db handle,  redirecting to self and terminating apache child");
+            $r->headers_out->set('Location' => $r->unparsed_uri() );
+            no strict 'subs';
+            $r->status(Apache2::Const::HTTP_MOVED_TEMPORARILY);
+            $r->child_terminate();
+            return Apache2::Const::REDIRECT;
+        }
+
         $r->status( $$requestObject{'stat'} );
         if ( $$requestObject{'stat'} eq '500' )
         {
@@ -706,8 +731,8 @@ sub doProvisionGET()
 
     # unless($$requestObject{'query'}{'serial_number'})
     # {
-    # 	$$requestObject{'stat'}=Apache2::Const::HTTP_FAILED_DEPENDENCY;
-    # 	return 'missing data (serial_number)';
+    #   $$requestObject{'stat'}=Apache2::Const::HTTP_FAILED_DEPENDENCY;
+    #   return 'missing data (serial_number)';
     # }
     # lkup system
     my $data = $sth->fetchall_arrayref( {}, undef );
@@ -915,12 +940,12 @@ sub doSql()
     if ($dbh == undef)
     {
 
-        $logger->error("detected bad db handle,  redirecting to self and terminating apache child");
+        $logger->error("(doSql)detected bad db handle,  redirecting to self and terminating apache child");
         print STDERR "detected bad db handle,  redirecting to self and terminating apache child";
         # check for bad db handle and redirect to self
-        $r->headers_out->set(Location => $r->unparsed_uri() );
+        $r->headers_out->set('Location' => ($r->subprocess_env('HTTPS') eq 'on' ? 'https' : 'http' ) . '://' . $r->hostname() . $r->unparsed_uri() );
         no strict 'subs';
-        $r->status(Apache2::Const::HTTP_MOVED_TEMPORARILY);
+        $r->status(302);
 
         # no kill of this child, situations have been seen where this apache child will
         # never again get a good db handle
@@ -928,9 +953,7 @@ sub doSql()
 
         # exiting here, as returning anything will require refactoring all methods that 
         # call this to handles the error and bubble it up to handler()
-        exit;
-
-
+        return 'badhandle';
     }
 
     my $sth = $dbh->prepare($sql);
@@ -957,6 +980,17 @@ sub recordFetch()
     my $return;
 
     my $rtn = &doSql( $sql, $parms );
+    if ($rtn eq 'badhandle')
+    {
+       $db_retry =1;
+       $r->headers_out->set(Location => $r->unparsed_uri() );
+       no strict 'subs';
+       $r->status(302);
+      # no kill of this child, situations have been seen where this apache child will
+      # never again get a good db handle
+       $r->child_terminate();
+        return 'badhandle';
+    }
     if ( $$rtn{'err'} )
     {
         $$requestObject{'stat'} = Apache2::Const::HTTP_INTERNAL_SERVER_ERROR;
@@ -1085,14 +1119,14 @@ sub doGenericPUT
             {
                 $dbs->do(
                     'insert into inv_audit set 
-					entity_name=?, 
-					entity_key=?,
-					field_name=?,
-					old_value=?,
-					new_value=?,
-					change_time=?,
-					change_user=?,
-					change_ip=?',
+                    entity_name=?, 
+                    entity_key=?,
+                    field_name=?,
+                    old_value=?,
+                    new_value=?,
+                    change_time=?,
+                    change_user=?,
+                    change_ip=?',
                     {},
                     (
                         $entity,
@@ -1198,14 +1232,14 @@ sub doGenericPOST
     #audit entry for create
     $dbh->do(
         'insert into inv_audit set 
-		entity_name=?, 
-		entity_key=?,
-		field_name=?,
-		old_value=?,
-		new_value=?,
-		change_time=?,
-		change_user=?,
-		change_ip=?',
+        entity_name=?, 
+        entity_key=?,
+        field_name=?,
+        old_value=?,
+        new_value=?,
+        change_time=?,
+        change_user=?,
+        change_ip=?',
         {},
         (
             $entity,
@@ -1399,14 +1433,14 @@ sub doAclPUT
             {
                 $dbs->do(
                     'insert into inv_audit set 
-					entity_name=?, 
-					entity_key=?,
-					field_name=?,
-					old_value=?,
-					new_value=?,
-					change_time=?,
-					change_user=?,
-					change_ip=?',
+                    entity_name=?, 
+                    entity_key=?,
+                    field_name=?,
+                    old_value=?,
+                    new_value=?,
+                    change_time=?,
+                    change_user=?,
+                    change_ip=?',
                     {},
                     (
                         $entity,
@@ -1632,14 +1666,14 @@ sub doGenericDELETE
         {
             $dbh->do(
                 'insert into inv_audit set 
-				entity_name=?, 
-				entity_key=?,
-				field_name=?,
-				old_value=?,
-				new_value=?,
-				change_time=now(),
-				change_user=?,
-				change_ip=?',
+                entity_name=?, 
+                entity_key=?,
+                field_name=?,
+                old_value=?,
+                new_value=?,
+                change_time=now(),
+                change_user=?,
+                change_ip=?',
                 {},
                 (
                     $requestObject->{'entity'},
@@ -1664,7 +1698,7 @@ sub parseQueryParams
     my @ranges = split( /[&;]/, $data );
     foreach my $range (@ranges)
     {
-        #			next unless $range =~ /(\w+)([!~>=<]+)(.+)/;
+        #           next unless $range =~ /(\w+)([!~>=<]+)(.+)/;
         next unless $range =~ /(\w+)([!~>=<]+)(.*)/;
         my $key = $1;
         my $op  = $2;
@@ -1881,14 +1915,14 @@ sub insertAuditEntry
     my ( $dbh, $requestObject, $entity, $key, $name, $old, $new, $time ) = @_;
 
     my $sql = 'insert into inv_audit set
-		entity_name=?,
-		entity_key=?,
-		field_name=?,
-		old_value=?,
-		new_value=?,
-		change_time=?,
-		change_user=?,
-		change_ip=?';
+        entity_name=?,
+        entity_key=?,
+        field_name=?,
+        old_value=?,
+        new_value=?,
+        change_time=?,
+        change_user=?,
+        change_ip=?';
 
     $dbh->do( $sql, {}, ( $entity, $key, $name, $old, $new, $time, $requestObject->{user}->{username}, $$requestObject{ip_address} ) );
 }
@@ -2503,7 +2537,7 @@ sub doSystemGET()
         my @ranges = split( /[&;]/, $$requestObject{getparams} );
         foreach my $range (@ranges)
         {
-            #			next unless $range =~ /(\w+)([!~>=<]+)(.+)/;
+            #           next unless $range =~ /(\w+)([!~>=<]+)(.+)/;
             next unless $range =~ /(\w+)([!~>=<]+)(.*)/;
             my $key = $1;
             my $op  = $2;
@@ -2754,14 +2788,14 @@ sub doSystemPUT()
             {
                 $dbs->do(
                     'insert into inv_audit set 
-					entity_name=?, 
-					entity_key=?,
-					field_name=?,
-					old_value=?,
-					new_value=?,
-					change_time=?,
-					change_user=?,
-					change_ip=?',
+                    entity_name=?, 
+                    entity_key=?,
+                    field_name=?,
+                    old_value=?,
+                    new_value=?,
+                    change_time=?,
+                    change_user=?,
+                    change_ip=?',
                     {},
                     (
                         'device',
@@ -2838,14 +2872,14 @@ sub doSystemPUT()
             {
                 $dbs->do(
                     'insert into inv_audit set 
-					entity_name=?, 
-					entity_key=?,
-					field_name=?,
-					old_value=?,
-					new_value=?,
-					change_time=?,
-					change_user=?,
-					change_ip=?',
+                    entity_name=?, 
+                    entity_key=?,
+                    field_name=?,
+                    old_value=?,
+                    new_value=?,
+                    change_time=?,
+                    change_user=?,
+                    change_ip=?',
                     {},
                     (
                         'device',
@@ -2985,17 +3019,17 @@ sub lookupDC()
     my $ip = shift;
     my $dc = $dbh->selectcol_arrayref(
         'select data_center_code from 
-		datacenter_subnet s
-		where
-		INET_ATON(?) BETWEEN INET_ATON(
-		LEFT(s.subnet,
-		INSTR(subnet, "/")-1)) AND
-		INET_ATON(
-		LEFT(s.subnet,
-		INSTR(subnet, "/")-1))+ POW(2, 32-SUBSTRING(subnet,
-		INSTR(subnet
-		, "/")+1
-		))-1', {}, ($ip)
+        datacenter_subnet s
+        where
+        INET_ATON(?) BETWEEN INET_ATON(
+        LEFT(s.subnet,
+        INSTR(subnet, "/")-1)) AND
+        INET_ATON(
+        LEFT(s.subnet,
+        INSTR(subnet, "/")-1))+ POW(2, 32-SUBSTRING(subnet,
+        INSTR(subnet
+        , "/")+1
+        ))-1', {}, ($ip)
     );
     return $$dc[0];
 }
@@ -3099,4 +3133,3 @@ sub doUpdateIps
 #define HTTP_VARIANT_ALSO_VARIES           506
 #define HTTP_INSUFFICIENT_STORAGE          507
 #define HTTP_NOT_EXTENDED                  510
-
