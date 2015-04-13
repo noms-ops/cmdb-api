@@ -618,7 +618,7 @@
                 "_required": "false"
             },
             "_extends": "/lexicon/entities/device",
-            "_field_order": "fqdn,status,inventory_component_type,roles,ipaddress,environment_name,svc_id,notes",
+            "_field_order": "fqdn,status,inventory_component_type,roles,ipaddress,environment_name,svc_id,tags,notes",
             "guest_fqdns": {
                 "fqdn": {
                     "_required": "false"
@@ -848,7 +848,7 @@
                 "_required": "false"
             },
             "tags": {
-                "_label": "JSON Tags",
+                "_label": "Tags",
                 "_required": "false"
             },
             "uuid": {
