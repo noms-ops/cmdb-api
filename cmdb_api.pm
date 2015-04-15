@@ -2667,6 +2667,8 @@ sub doSystemGET()
 sub doSystemPUT()
 {
     my $requestObject = shift;
+
+    # this should likely be changed to AutoCommit =>0 if $dbs->begin_work doesn't prooperly enter a transaction
     my $dbs           = DBI->connect( "DBI:$DRIVER:database=$DATABASE;host=$DBHOST", $DBUSER, $DBPASS, { AutoCommit => 1 } );
     my $x             = 0;
     my $fqdn          = $$requestObject{'path'}[0];
