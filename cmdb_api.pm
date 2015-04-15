@@ -341,7 +341,7 @@ sub handler()
         {
             $r->headers_out->add( $$requestObject{'headers_out'}[0] => $$requestObject{'headers_out'}[1] );
         }
-        if($data eq 'killchild')
+        if(defined $data && $data eq 'killchild')
         {
             $r->child_terminate();
             undef $data;
@@ -561,11 +561,18 @@ sub doColumn_lkupGET()
         $sql = 'select distinct metadata_value from device_metadata where metadata_name=? order by 1 limit 2000';
     }
     my $res = $dbh->selectcol_arrayref( $sql, {}, ($col) );
-    my @new;
+    my @return;
 
-    foreach (@$res) { $_ =~ s/\"//g; push( @new, $_ ) if $_; }
+    # only adds value to return set if non empty after removing quotes
+    foreach my $ll (@$res) { 
+        if(defined($ll))
+        {
+            $ll =~ s/\"//g; 
+            push( @return, $ll );             
+        }
+    }
 
-    return \@new;
+    return \@return;
 }
 
 #audit info retreival
@@ -1035,8 +1042,8 @@ sub doGenericPUT
     my $requestObject = shift;
     my $entity        = $$requestObject{'entity'};
     $logger->info("processing PUT");
-    my $dbs = DBI->connect( "DBI:$DRIVER:database=$DATABASE;host=$DBHOST", $DBUSER, $DBPASS, { AutoCommit => 1 } );
-    $dbs->begin_work;
+    my $dbs = DBI->connect( "DBI:$DRIVER:database=$DATABASE;host=$DBHOST", $DBUSER, $DBPASS, { AutoCommit => 0 } );
+    # $dbs->begin_work; # this is a noop when AutoCommit = 0
     my ( @sql, $parms, @errors );
     my $data = &eat_json( $$requestObject{'body'}, { allow_nonref => 1 } );
 
@@ -2396,7 +2403,7 @@ sub doEnvironmentsGET()
     my $service;
     my $get_services = 0;
 
-    if ( $path[1] eq 'services' )
+    if ( defined ($path[1]) && $path[1] eq 'services' )
     {
         return &doEnvironmentsServicesGET($requestObject);
     }
@@ -2453,7 +2460,7 @@ sub doEnvironmentsPOST()
     my $environment = $path[0];
     my $service     = $path[2];
 
-    if ( $path[1] eq 'services' )
+    if ( defined $path[1] && $path[1] eq 'services' )
     {
         return &doEnvironmentsServicesPOST($requestObject);
     }
@@ -2477,7 +2484,7 @@ sub doEnvironmentsDELETE()
     my $environment = $path[0];
     my $service     = $path[2];
 
-    if ( $path[1] eq 'services' )
+    if ( defined $path[1] && $path[1] eq 'services' )
     {
         if ( defined $service )
         {
@@ -2502,7 +2509,7 @@ sub isChanged()
 {
     my ($old,$new,$field)=@_;
     # $logger->info("TESTCHANGED--$field--$$old{$field}=$$new{$field}--");
-    if ("$$old{$field}" eq "$$new{$field}")
+    if (defined $$old{$field} && defined $$new{$field} && "$$old{$field}" eq "$$new{$field}")
     {
         return 0;
     }
@@ -2705,7 +2712,7 @@ sub doSystemPUT()
         || (
             !exists( $data->{'data_center_code'} )
 
-            #&& defined($lkup_data->{'data_center_code'})
+            && defined($lkup_data->{'data_center_code'})
             && length( $lkup_data->{'data_center_code'} ) == 0
         )
       )
@@ -2918,7 +2925,7 @@ sub applyDefaults()
     my $fields = &getFieldList( $entity );
     foreach (@$fields)
     {
-        if ( ( !exists $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{ $entity }->{$_}->{_default_value} )
+        if ( ( !defined $$data{$_} || $$data{$_} eq '' ) && $tree_extended->{entities}->{ $entity }->{$_}->{_default_value} )
         {
             $logger->debug("using ($entity) default value '$tree_extended->{entities}->{ $entity }->{$_}->{_default_value}' for $_");
             $$data{$_} = $tree_extended->{entities}->{ $entity }->{$_}->{_default_value};
@@ -2955,7 +2962,7 @@ sub doSystemPOST()
         {
             $$data{$_} = &doFieldNormalization( 'system', $_, $$data{$_} );
             $set_sql .= "," if $set_sql;
-            if ( length( $$data{$_} ) == 0 )
+            if ( !defined $$data{$_} || length( $$data{$_} ) == 0 )
             {
                 $set_sql .= " $_=NULL";
 
