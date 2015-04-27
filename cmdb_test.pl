@@ -159,7 +159,7 @@ sub execTest()
         $response = $ua->request($request);
     }
     print "### executing test: " . $test->{'testname'} . " with url (" . $test->{'method'} . "): $testurl" ;
-
+    print "DEBUG: got status: $response->code content: \n" . $response->content if $DEBUG;
     if($response->code == 501)
     {
         $result.="\nHTTP ERROR: " . $response->status_line;

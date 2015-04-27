@@ -1,5 +1,5 @@
 testname,notes,entity,entity_key,data,method,host:port,baseurl,user/pass,returncode,result type,result check
-create system,,system,test.test.com,"{""fqdn"":""test.test.com"",""ipaddress"":""10.10.0.1"",""drac"":""10.10.10.1""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/system/test.test.com
+create system,,system,test.test.com,"{""fqdn"":""test.test.com"",""ipaddress"":""10.10.0.1"",""ipmi_ip"":""10.10.10.1""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/system/test.test.com
 get system,,system,test.test.com,,GET,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,ipaddress=10.10.0.1
 modify system,,system,test.test.com,"{""notes"":""testnote""}",PUT,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,notes=testnote
 lookup nonexistent system,,system,no.system.com,,GET,http://localhost:80,/cmdb_api/v1/,readonly/readonly,404,,
@@ -36,16 +36,16 @@ modify role,,role,test::role,"{""role_name"":""test role for unit testing""}",PU
 delete role,,role,test::role,,DELETE,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,,
 delete nonexistenet role,,role,norole,,DELETE,http://localhost:80,/cmdb_api/v1/,readonly/readonly,404,,
 ,,,,,,http://localhost:80,/cmdb_api/v1/,readonly/readonly,,,
-add acl,,acl,999,"{""acl_group"":""readonly"",""acl_id"":999,""entity"":""system"",""field"":""drac"",""logic"":""1""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/acl/999
+add acl,,acl,999,"{""acl_group"":""readonly"",""acl_id"":999,""entity"":""system"",""field"":""ipmi_ip"",""logic"":""1""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/acl/999
 verify acl,,acl,999,,GET,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,entity=system
-make change against acl,,system,test.test.com,"{""drac"":""20.20.20.20""}",PUT,http://localhost:80,/cmdb_api/v1/,readonly/readonly,403,,
+make change against acl,,system,test.test.com,"{""ipmi_ip"":""20.20.20.20"",""note"":""testnoate""}",PUT,http://localhost:80,/cmdb_api/v1/,readonly/readonly,403,,
 create test env,,environments,,"{""name"":""testenv1"",""environment_name"":""testenv1""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/environments/testenv1
 create environment/service,,environments/testenv1/services,,"{""name"":""servicetest"",""type"":""service"",""testattribute"":""12345"",""environment_name"":""testenv1""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/environments/testenv1/services/servicetest
 create child env,,environments,,"{""name"":""testenv2"",""environment_name"":""testenv1""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/environments/testenv2
 validate inherited service,,environments/testenv2/services,servicetest,,GET,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,environment_name=testenv1
 create service override,,environments/testenv2/services,,"{""name"":""servicetest"",""type"":""service"",""environment_name"":""testenv2""}",POST,http://localhost:80,/cmdb_api/v1/,readonly/readonly,201,header,Location=/cmdb_api/v1/environments/testenv2/services/servicetest
 create service attribute override,,environments/testenv2/services,servicetest,"{""testattribute"":""testvalue""}",PUT,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,testattribute=testvalue
-verify acl blocked change,,system,test.test.com,,GET,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,drac=10.10.10.1
+verify acl blocked change,,system,test.test.com,,GET,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,data,ipmi_ip=10.10.10.1
 delete acl,,acl,999,,DELETE,http://localhost:80,/cmdb_api/v1/,readonly/readonly,200,,
 ,,,,,,,,,,,
 ,,,,,,,,,,,
