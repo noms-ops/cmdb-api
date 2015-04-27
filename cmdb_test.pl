@@ -104,11 +104,7 @@ if($RUNTESTS)
         print "\n";
     }    
     print "Complete: Total: " . ($$testResults{'pass'} + $$testResults{'fail'}) . " Pass: $$testResults{'pass'}  Fail: $$testResults{'fail'}\n";
-    if($$testResults{'fail'})
-    {
-        exit 0;
-    }
-    else
+    if($$testResults{'fail'} > 0)
     {
         exit 1;
     }
