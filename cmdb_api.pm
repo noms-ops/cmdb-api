@@ -123,6 +123,8 @@ my $log_config_file = $opt->{'logconfig'};
 Log::Log4perl::init($log_config_file);
 
 my $logger = Log::Log4perl->get_logger('inventory.cmdb_api');
+my $syslog = Log::Log4perl->get_logger('inventory.syslog');
+
 unless ($lexicon)
 {
     #TODO this hardcoded path is bad fix it
@@ -217,6 +219,7 @@ sub handler()
             {
                $db_retry=0;
                $logger->error("(handler 1)detected bad db handle,  redirecting to self and terminating apache child");
+               $syslog->error("(handler 1)detected bad db handle,  redirecting to self and terminating apache child");
                $r->headers_out->set('Location' => ($r->subprocess_env('HTTPS') eq 'on' ? 'https' : 'http' ) . '://' . $r->hostname() . $r->unparsed_uri() );
                no strict 'subs';
                $r->status(302);
@@ -319,6 +322,7 @@ sub handler()
         {
             $db_retry=0;
             $logger->error("(handler 2)detected bad db handle,  redirecting to self and terminating apache child");
+            $syslog->error("(handler 2)detected bad db handle,  redirecting to self and terminating apache child");
             $r->headers_out->set('Location' => $r->unparsed_uri() );
             no strict 'subs';
             $r->status(Apache2::Const::HTTP_MOVED_TEMPORARILY);
@@ -948,6 +952,7 @@ sub doSql()
     {
 
         $logger->error("(doSql)detected bad db handle,  redirecting to self and terminating apache child");
+        $syslog->error("(doSql)detected bad db handle,  redirecting to self and terminating apache child");
         print STDERR "detected bad db handle,  redirecting to self and terminating apache child";
         # check for bad db handle and redirect to self
         $r->headers_out->set('Location' => ($r->subprocess_env('HTTPS') eq 'on' ? 'https' : 'http' ) . '://' . $r->hostname() . $r->unparsed_uri() );
