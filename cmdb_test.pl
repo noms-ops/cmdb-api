@@ -22,12 +22,14 @@ use JSON;
 use LWP::UserAgent;
 use Getopt::Std;
 my %opt;
-getopts('f:dprH',\%opt);
+getopts('f:dprHh:R:',\%opt);
 my $DEBUG = $opt{'d'} ? 1 : 0;
 my $FILE = $opt{'f'} ? $opt{'f'} : "";
 my $PARSEONLY = $opt{'p'} ? 1 : 0;
 my $RUNTESTS = $opt{'r'} ? 1 : 0;
 my $HALT = $opt{'H'} ? 1 : 0;
+my $HOSTPORT= $opt{'h'} ? $opt{'h'} : undef;
+my $REALM =  $opt{'R'} ? $opt{'R'} : 'Operations Only';
 
 if(length($FILE) == 0)
 {
@@ -36,6 +38,7 @@ print "usage: inv_test.pl -f <testcase file>
     -p: parse testcase file only 
     -r: run tests
     -d: debug
+    -h: alternate host/port (ex:  https://localhost)
 ";
 exit;
 }
@@ -101,6 +104,10 @@ if($RUNTESTS)
         print "\n";
     }    
     print "Complete: Total: " . ($$testResults{'pass'} + $$testResults{'fail'}) . " Pass: $$testResults{'pass'}  Fail: $$testResults{'fail'}\n";
+    if($$testResults{'fail'} > 0)
+    {
+        exit 1;
+    }
 }
 
 sub makeUrlQueryStr()
@@ -123,7 +130,8 @@ sub execTest()
     my @expected_result;
 
 ### assemble request from test data
-    my $testurl=$test->{'host:port'} . $test->{'baseurl'} . $test->{'entity'} . '/';
+    my $hostport_config= $HOSTPORT || $test->{'host:port'};
+    my $testurl=$hostport_config . $test->{'baseurl'} . $test->{'entity'} . '/';
     if ($test->{'method'} ne 'POST')
     {
         $testurl.=$test->{'entity_key'};
@@ -132,9 +140,9 @@ sub execTest()
     my $user=$1;
     my $pass=$2;
     my $result='';
-    $test->{'host:port'}=~m|//(.*)|;
+    $hostport_config=~m|//(.*)|;
     my $hostport=$1;
-    $ua->credentials($hostport,'Operations Only',$user,$pass);
+    $ua->credentials($hostport,$REALM,$user,$pass);
     if($test->{'method'} eq 'GET')
     {
         if($test->{'data'})
@@ -151,7 +159,7 @@ sub execTest()
         $response = $ua->request($request);
     }
     print "### executing test: " . $test->{'testname'} . " with url (" . $test->{'method'} . "): $testurl" ;
-
+    print "DEBUG: got status: $response->code content: \n" . $response->content if $DEBUG;
     if($response->code == 501)
     {
         $result.="\nHTTP ERROR: " . $response->status_line;

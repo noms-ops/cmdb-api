@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Prepare 'distribution' (source tarball)
+# This is a placeholder for what should really be a Perl module
+# prepared with Module::Build
+
+set -e
+
+NAME=cmdb-api
+VERSION=0.25
+
+rm -rf $NAME-$VERSION $NAME-*.tar.gz
+files=$(ls -1 | grep -v ^dist\$ | grep -v ^clean\$)
+mkdir $NAME-$VERSION
+echo "+++ files:" $files
+cp -R $files $NAME-$VERSION
+tar cvzf $NAME-$VERSION.tar.gz $NAME-$VERSION && rm -rf $NAME-$VERSION
